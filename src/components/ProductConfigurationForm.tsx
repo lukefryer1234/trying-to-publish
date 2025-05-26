@@ -77,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted size for special layout radio images
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2",
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" // Adjusted image container size for special layout
+                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" 
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')}-${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -362,7 +362,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const orderedOptions = [
         numBaysOption,
         beamSizeOption,
-        baySizeOption, // Width Per Bay
+        baySizeOption, 
         trussTypeOption,
         catSlideOption,
     ].filter(Boolean) as ProductOption[];
@@ -427,7 +427,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             >
               <ShoppingCart className="mr-2 h-5 w-5" /> Add to Basket
             </Button>
-            <Button onClick={handlePreview} variant="outline" size="lg" className="w-full">
+            <Button 
+              onClick={handlePreview} 
+              size="lg" 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
               <Eye className="mr-2 h-5 w-5" /> Preview Purchase
             </Button>
             <Button
@@ -443,7 +447,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
               </svg>
               Pay Now
             </Button>
-            <Button asChild variant="outline" size="lg" className="w-full">
+            <Button asChild size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/">
                 Continue Shopping
               </Link>

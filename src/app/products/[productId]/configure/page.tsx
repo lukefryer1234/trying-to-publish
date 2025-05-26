@@ -62,8 +62,12 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     return (
       <div className="container mx-auto py-8">
         <div className="text-center mb-6 md:mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Configure Your {product.name}</h1>
-          {/* Product description removed from here to match cleaner layout */}
+          {productId === 'gazebos' && ( // Only show outer title for gazebos
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Configure Your {product.name}
+            </h1>
+          )}
+          {/* For garages, the title "Configure Your New Garage" is inside ProductConfigurationForm */}
         </div>
         <ProductConfigurationForm product={product} />
       </div>

@@ -1,8 +1,10 @@
 
 import { getProductById, mockFeaturedDeals } from '@/lib/products';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ProductConfigurationForm } from '@/components/ProductConfigurationForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 import { FeaturedDealCard } from '@/components/FeaturedDealCard';
 import type { Product } from '@/types';
@@ -28,11 +30,13 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
   if (productId === 'special-deals') {
     const featuredDeals: Product[] = mockFeaturedDeals;
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{product.name}</h1>
+      <div className="container mx-auto py-8 md:py-12">
+        <div className="text-center mb-10 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{product.name}</h1>
           {product.description && (
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{product.description}</p>
+            <p className="text-md md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              {product.description}
+            </p>
           )}
         </div>
         {featuredDeals.length > 0 ? (
@@ -44,6 +48,11 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
         ) : (
           <p className="text-center text-muted-foreground">No special deals available at the moment. Please check back later.</p>
         )}
+        <div className="mt-12 text-center">
+          <Button asChild size="lg" className="bg-amber-700 hover:bg-amber-800 text-white">
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </div>
       </div>
     );
   }

@@ -36,28 +36,31 @@ const renderOption = (
   currentValue: string | number | boolean | undefined, 
   handleOptionChange: (optionId: string, newValue: string | number | boolean) => void,
   productName: string,
-  isSpecialLayout: boolean
+  isSpecialLayout: boolean // Determines centered styling for labels/controls
 ) => {
+  const controlContainerClasses = isSpecialLayout ? "mx-auto max-w-xs" : "";
+  const inputClasses = isSpecialLayout ? "bg-background/70" : "bg-input/50";
+
   return (
-    <div key={option.id} className={cn("text-center", isSpecialLayout ? "mb-8" : "mb-6")}>
-      <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
+    <div key={option.id} className={cn(isSpecialLayout ? "text-center mb-8" : "mb-6")}>
+      <Label htmlFor={option.id} className={cn("text-md font-semibold text-foreground block mb-3", isSpecialLayout ? "" : "text-left")}>
         {option.name}
       </Label>
-      {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-3">{option.description}</p>}
+      {option.description && <p className={cn("text-sm text-muted-foreground -mt-2 mb-3", isSpecialLayout ? "" : "text-left")}>{option.description}</p>}
 
       {option.type === 'select' && option.values && (
-        <div className="mx-auto max-w-xs">
+        <div className={controlContainerClasses}>
           <Select
             value={currentValue as string}
             onValueChange={(value) => handleOptionChange(option.id, value)}
           >
-            <SelectTrigger id={option.id} className={cn("w-full text-center", isSpecialLayout ? "bg-background/70" : "bg-input/50")}>
+            <SelectTrigger id={option.id} className={cn("w-full", inputClasses, isSpecialLayout ? "text-center" : "")}>
               <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
               {option.values.map(val => (
                 <SelectItem key={val.value} value={val.value}>
-                  {val.label} {val.priceModifier && productName !== 'Garages' ? `(${val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})` : ''}
+                  {val.label} {val.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' ? `(${val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})` : ''}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -69,7 +72,7 @@ const renderOption = (
         <RadioGroup
           value={currentValue as string}
           onValueChange={(value) => handleOptionChange(option.id, value)}
-          className="flex justify-center flex-wrap gap-4 pt-1"
+          className={cn("flex flex-wrap gap-4 pt-1", isSpecialLayout ? "justify-center" : "")}
         >
           {option.values.map(val => (
             <Label 
@@ -77,7 +80,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2",
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted size for non-special layout as well if needed
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +88,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" 
+                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20" // Adjusted size
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')}-${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -98,14 +101,14 @@ const renderOption = (
                 </div>
               )}
               <span className="text-sm text-center block">{val.label}</span>
-                {val.priceModifier && productName !== 'Garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})</span> : ''}
+                {val.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})</span> : ''}
             </Label>
           ))}
         </RadioGroup>
       )}
 
       {option.type === 'slider' && (
-        <div className="space-y-2 pt-1 mx-auto max-w-xs">
+        <div className={cn("space-y-2 pt-1", controlContainerClasses)}>
           <Slider
             id={option.id}
             min={option.min}
@@ -115,14 +118,14 @@ const renderOption = (
             onValueChange={(newVal) => handleOptionChange(option.id, newVal[0])}
             className="w-full"
           />
-          <div className="text-center text-sm text-muted-foreground">
+          <div className={cn("text-sm text-muted-foreground", isSpecialLayout ? "text-center" : "text-left")}>
             {currentValue as number} {option.unit || ''}
           </div>
         </div>
       )}
       
       {option.type === 'number_input' && ( 
-         <div className="mx-auto max-w-xs"> 
+         <div className={controlContainerClasses}> 
             <Input
                 id={option.id}
                 type="number"
@@ -131,14 +134,14 @@ const renderOption = (
                 min={option.min || 0}
                 max={option.max || undefined}
                 step={option.step || 1}
-                className={cn("w-full text-center", isSpecialLayout ? "bg-background/70" : "bg-input/50")}
+                className={cn("w-full", inputClasses, isSpecialLayout ? "text-center" : "")}
             />
          </div>
       )}
 
 
       {option.type === 'checkbox' && (
-        <div className="flex items-center justify-center space-x-2 pt-1">
+        <div className={cn("flex items-center space-x-2 pt-1", isSpecialLayout ? "justify-center" : "")}>
           <Checkbox
             id={option.id}
             checked={currentValue as boolean}
@@ -146,7 +149,7 @@ const renderOption = (
           />
           <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
             {option.checkboxLabel || 'Yes'}
-              {option.priceModifier && productName !== 'Garages' && currentValue === true ? ` (+£${option.priceModifier.toFixed(2)})` : ''}
+              {option.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' && currentValue === true ? ` (+£${option.priceModifier.toFixed(2)})` : ''}
           </Label>
         </div>
       )}
@@ -347,104 +350,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
   const totalPrice = currentPrice * quantity;
   const formattedTotalPrice = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(totalPrice);
 
-  const isSpecialConfigLayout = product.id === 'garages' || product.id === 'gazebos';
   const isOakBeamsLayout = product.id === 'oak-beams';
   const isPorchesLayout = product.id === 'porches';
+  const isGarageLayout = product.id === 'garages';
+  const isGazeboLayout = product.id === 'gazebos';
 
-
-  if (isSpecialConfigLayout) { 
-    const numBaysOption = product.options.find(opt => opt.id === 'numBays');
-    const beamSizeOption = product.options.find(opt => opt.id === 'beamSize');
-    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); // Width Per Bay
-    const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
-    const catSlideOption = product.options.find(opt => opt.id === 'catSlide');
-    
-    const orderedOptions = [
-      numBaysOption,
-      beamSizeOption,
-      baySizeOption,
-      trussTypeOption,
-      catSlideOption,
-    ].filter(Boolean) as ProductOption[];
-
-
-    const explicitlyHandledOptionIds = orderedOptions.map(opt => opt.id);
-    const otherOptions = product.options.filter(opt => !explicitlyHandledOptionIds.includes(opt.id));
-    
-    return (
-      <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg border-2 bg-secondary")}>
-        <CardContent className="space-y-8 pt-8 px-4 md:px-8">
-          {product.id === 'garages' && (
-            <>
-              <h2 className="text-3xl font-bold text-foreground text-center mb-6">
-                Configure Your New Garage
-              </h2>
-              <Separator className="my-6 bg-border/50" />
-            </>
-          )}
-          
-          {orderedOptions.map(option => {
-            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product.name, true);
-          })}
-          
-          {otherOptions.map(option => {
-            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product.name, true);
-          })}
-          
-           {(product.id === 'gazebos' || product.id === 'garages') && (
-            <div className="text-center pt-4">
-              <Label htmlFor="quantity-special" className="text-md font-semibold text-foreground block mb-3">
-                Quantity
-              </Label>
-              <Input
-                id="quantity-special"
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                min="1"
-                className="w-24 mx-auto bg-background/70"
-              />
-            </div>
-          )}
-
-
-          <Separator className="my-6" />
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
-            <p className="text-3xl font-bold text-foreground mb-6">
-              {formattedTotalPrice}
-            </p>
-          </div>
-        </CardContent>
-        <CardFooter className="pt-2 pb-8 px-4 md:px-8">
-          <div className="w-full grid grid-cols-2 gap-4">
-            <Button
-              size="lg"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-              onClick={() => handleAddToCart()}
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" /> Add to Basket
-            </Button>
-            <Button
-              size="lg"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-              onClick={() => {
-                handleAddToCart("Item added to cart. Proceeding to checkout...");
-                router.push('/checkout');
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8.326 4.111c.404-.196.606.096.48.492l-2.05 6.993c-.11.375.068.66.45.66h2.727c2.56 0 4.259-1.215 4.527-3.708.215-1.96-.859-3.016-2.739-3.016h-2.063c-.233 0-.39-.114-.31-.325l.836-2.096c.08-.21.242-.35.46-.35h2.563c.382 0 .58-.275.47-.643L11.251.53C11.141.176 10.94 0 10.557 0H4.493c-.383 0-.581.276-.471.643l1.746 4.389c.11.276-.068.562-.45.562H3.165c-2.31 0-3.621 1.5-3.165 4.027.382 2.13 1.968 3.334 4.027 3.334h1.478c.55 0 .836.383.709.909l-1.715 5.503c-.128.41.053.709.442.709h4.027l.096-.3c.128-.41.347-.677.693-.677h.958c2.822 0 5.138-1.58 5.626-4.6.382-2.406-.766-3.85-2.806-3.85h-2.096c-.347 0-.548-.259-.45-.612l1.698-5.765z"/>
-              </svg>
-              Pay Now
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-    );
-  }
 
   if (isOakBeamsLayout) {
     return (
@@ -544,48 +454,142 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     );
   }
 
+  // Default layout for Garages, Gazebos, Oak Flooring, and other generic products
+  // Uses centered options and specific card styling.
+  const orderedOptionsConfig = [
+    { id: 'numBays', productIds: ['garages', 'gazebos'] },
+    { id: 'beamSize', productIds: ['garages'] },
+    { id: 'baySize', productIds: ['garages', 'gazebos'] }, // Width Per Bay
+    { id: 'trussType', productIds: ['garages', 'gazebos'] },
+    { id: 'catSlide', productIds: ['garages'] },
+    // Gazebo specific options
+    { id: 'legType', productIds: ['gazebos'] },
+    { id: 'sizeType', productIds: ['gazebos'] }, // This is width for Gazebos
+  ];
 
-  // Default form for other products (e.g. Oak Flooring)
+  let orderedOptions: ProductOption[] = [];
+  let remainingOptions: ProductOption[] = [...product.options];
+
+  if (isGarageLayout || isGazeboLayout) {
+    orderedOptionsConfig.forEach(config => {
+      if (config.productIds.includes(product.id)) {
+        const option = product.options.find(opt => opt.id === config.id);
+        if (option) {
+          orderedOptions.push(option);
+          remainingOptions = remainingOptions.filter(opt => opt.id !== config.id);
+        }
+      }
+    });
+    // Ensure specific order for garages
+    if (isGarageLayout) {
+        orderedOptions.sort((a,b) => {
+            const order = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide'];
+            return order.indexOf(a.id) - order.indexOf(b.id);
+        });
+    }
+  } else {
+    // For Oak Flooring and others, just use the default order
+    orderedOptions = [...product.options];
+    remainingOptions = [];
+  }
+
+
   return (
-    <Card className="w-full shadow-xl rounded-lg">
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-foreground">Configure Your {product.name}</CardTitle>
-        {product.options.find(opt => opt.id === 'description' && opt.type === 'checkbox') && (
-           <CardDescription>{product.options.find(opt => opt.id === 'description')?.checkboxLabel}</CardDescription>
+    <Card className={cn("w-full shadow-xl rounded-lg border-2 bg-secondary", (isGarageLayout || isGazeboLayout) ? "max-w-2xl mx-auto" : "")}>
+      {!isGarageLayout && ( /* Add header for non-garage products using this layout */
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
+        </CardHeader>
+      )}
+      <CardContent className={cn("space-y-8 pt-8 px-4 md:px-8", !isGarageLayout && !isGazeboLayout ? "pt-6" : "")}>
+        {isGarageLayout && (
+          <>
+            <h2 className="text-3xl font-bold text-foreground text-center -mb-2">
+              Configure Your New Garage
+            </h2>
+            <Separator className="my-6 bg-border/50" />
+          </>
         )}
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {product.options.map(option => {
+        
+        {orderedOptions.map(option => {
           const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-          return renderOption(option, currentValue, handleOptionChange, product.name, false);
+          return renderOption(option, currentValue, handleOptionChange, product.name, true); // true for isSpecialLayout
+        })}
+        {remainingOptions.map(option => { // Render any remaining options (e.g. for Oak Flooring)
+            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
+            return renderOption(option, currentValue, handleOptionChange, product.name, true); // true for isSpecialLayout
         })}
         
-        <div className="space-y-2 pt-4">
-          <Label htmlFor="quantity" className="text-md font-medium text-foreground">Quantity</Label>
+        <div className="text-center pt-4">
+          <Label htmlFor={`quantity-${product.id}`} className="text-md font-semibold text-foreground block mb-3">
+            Quantity
+          </Label>
           <Input
-            id="quantity"
+            id={`quantity-${product.id}`}
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
             min="1"
-            className="w-24 bg-input/50"
+            className="w-24 mx-auto bg-background/70"
           />
         </div>
 
-        <div className="text-2xl font-bold text-primary pt-6 border-t mt-6">
-          Total Price: {formattedTotalPrice}
+        <Separator className="my-6" />
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
+          <p className="text-3xl font-bold text-foreground mb-6">
+            {formattedTotalPrice}
+          </p>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6">
-         <Button onClick={() => router.back()} variant="outline" size="lg" className="w-full sm:w-auto">
-            <ArrowLeft className="mr-2 h-5 w-5" /> Back
-        </Button>
-        <Button onClick={handlePreview} variant="outline" size="lg" className="w-full sm:w-auto">
-          <Eye className="mr-2 h-5 w-5" /> Preview Configuration
-        </Button>
-        <Button onClick={()=> handleAddToCart()} size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-          <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-        </Button>
+      <CardFooter className="pt-2 pb-8 px-4 md:px-8">
+        {isGarageLayout || isGazeboLayout ? (
+          <div className="w-full grid grid-cols-2 gap-4">
+            <Button
+              size="lg"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => handleAddToCart()}
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" /> Add to Basket
+            </Button>
+            <Button
+              size="lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              onClick={() => {
+                handleAddToCart("Item added to cart. Proceeding to checkout...");
+                router.push('/checkout');
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.326 4.111c.404-.196.606.096.48.492l-2.05 6.993c-.11.375.068.66.45.66h2.727c2.56 0 4.259-1.215 4.527-3.708.215-1.96-.859-3.016-2.739-3.016h-2.063c-.233 0-.39-.114-.31-.325l.836-2.096c.08-.21.242-.35.46-.35h2.563c.382 0 .58-.275.47-.643L11.251.53C11.141.176 10.94 0 10.557 0H4.493c-.383 0-.581.276-.471.643l1.746 4.389c.11.276-.068.562-.45.562H3.165c-2.31 0-3.621 1.5-3.165 4.027.382 2.13 1.968 3.334 4.027 3.334h1.478c.55 0 .836.383.709.909l-1.715 5.503c-.128.41.053.709.442.709h4.027l.096-.3c.128-.41.347-.677.693-.677h.958c2.822 0 5.138-1.58 5.626-4.6.382-2.406-.766-3.85-2.806-3.85h-2.096c-.347 0-.548-.259-.45-.612l1.698-5.765z"/>
+              </svg>
+              Pay Now
+            </Button>
+          </div>
+        ) : (
+          // Buttons for Oak Flooring and other generic products
+          <div className="w-full flex flex-col sm:flex-row gap-3 pt-6 justify-center">
+             <Button onClick={() => router.back()} variant="outline" size="lg" className="w-full sm:w-auto">
+                <ArrowLeft className="mr-2 h-5 w-5" /> Back
+            </Button>
+            <Button onClick={()=> handleAddToCart()} size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+              <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+            </Button>
+             <Button
+              size="lg"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              onClick={() => {
+                handleAddToCart("Item added to cart. Proceeding to checkout...");
+                router.push('/checkout');
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.326 4.111c.404-.196.606.096.48.492l-2.05 6.993c-.11.375.068.66.45.66h2.727c2.56 0 4.259-1.215 4.527-3.708.215-1.96-.859-3.016-2.739-3.016h-2.063c-.233 0-.39-.114-.31-.325l.836-2.096c.08-.21.242-.35.46-.35h2.563c.382 0 .58-.275.47-.643L11.251.53C11.141.176 10.94 0 10.557 0H4.493c-.383 0-.581.276-.471.643l1.746 4.389c.11.276-.068.562-.45.562H3.165c-2.31 0-3.621 1.5-3.165 4.027.382 2.13 1.968 3.334 4.027 3.334h1.478c.55 0 .836.383.709.909l-1.715 5.503c-.128.41.053.709.442.709h4.027l.096-.3c.128-.41.347-.677.693-.677h.958c2.822 0 5.138-1.58 5.626-4.6.382-2.406-.766-3.85-2.806-3.85h-2.096c-.347 0-.548-.259-.45-.612l1.698-5.765z"/>
+              </svg>
+              Pay Now
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

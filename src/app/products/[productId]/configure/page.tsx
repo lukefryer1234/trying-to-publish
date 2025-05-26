@@ -57,24 +57,16 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
-  // Centered layout for garages, gazebos
-  if (productId === 'garages' || productId === 'gazebos') {
+  // Centered form, title inside form for oak-beams
+  if (productId === 'oak-beams') {
     return (
       <div className="container mx-auto py-8">
-        <div className="text-center mb-6 md:mb-10">
-          {productId === 'gazebos' && ( // Only show outer title for gazebos
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Configure Your {product.name}
-            </h1>
-          )}
-          {/* For garages, the title "Configure Your New Garage" is inside ProductConfigurationForm */}
-        </div>
         <ProductConfigurationForm product={product} />
       </div>
     );
   }
-
-  // Centered layout for porches
+  
+  // Centered page title, then centered form for porches
   if (productId === 'porches') {
     return (
       <div className="container mx-auto py-8">
@@ -85,27 +77,32 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
               {product.description}
             </p>
           )}
-           <Button asChild size="lg" className="bg-amber-700 hover:bg-amber-800 text-white">
-            <Link href="/">Back to Home</Link>
-          </Button>
         </div>
         <ProductConfigurationForm product={product} />
       </div>
     );
   }
 
-
-  // Centered layout for oak beams (form handles its own title)
-  if (productId === 'oak-beams') {
+  // Centered page title, then centered form for garages & gazebos
+  // Garage form handles its own internal title. Gazebo uses this page title.
+  if (productId === 'garages' || productId === 'gazebos') {
     return (
       <div className="container mx-auto py-8">
-        {/* Title and description are handled within the form for oak-beams */}
+        <div className="text-center mb-6 md:mb-10">
+          {productId === 'gazebos' && ( 
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              {product.name}
+            </h1>
+          )}
+          {/* For garages, the main title is inside ProductConfigurationForm */}
+        </div>
         <ProductConfigurationForm product={product} />
       </div>
     );
   }
 
-  // Default layout for other products (image on left, form on right)
+  // Default layout for other products (e.g. Oak Flooring): Image on left, form on right.
+  // The form panel itself will adopt the new standardized styling.
   return (
     <div className="container mx-auto py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -135,3 +132,4 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
+

@@ -35,10 +35,11 @@ const renderOption = (
   option: ProductOption, 
   currentValue: string | number | boolean | undefined, 
   handleOptionChange: (optionId: string, newValue: string | number | boolean) => void,
-  productName: string
+  productName: string,
+  isSpecialLayout: boolean
 ) => {
   return (
-    <div key={option.id} className="text-center">
+    <div key={option.id} className={cn("text-center", isSpecialLayout ? "mb-8" : "mb-6")}>
       <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
         {option.name}
       </Label>
@@ -50,7 +51,7 @@ const renderOption = (
             value={currentValue as string}
             onValueChange={(value) => handleOptionChange(option.id, value)}
           >
-            <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
+            <SelectTrigger id={option.id} className={cn("w-full text-center", isSpecialLayout ? "bg-background/70" : "bg-input/50")}>
               <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                "w-40 h-40 p-3", // Square dimensions
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-32 h-auto p-2", // Adjusted sizes
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -84,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                  "w-28 h-28" // Square image container
+                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" // Adjusted image container
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -119,6 +120,22 @@ const renderOption = (
           </div>
         </div>
       )}
+      
+      {option.type === 'number_input' && ( // For Oak Beams dimensions
+         <div className="mx-auto max-w-xs"> {/* Or adjust grid layout as needed */}
+            <Input
+                id={option.id}
+                type="number"
+                value={currentValue as number}
+                onChange={(e) => handleOptionChange(option.id, parseFloat(e.target.value) || 0)}
+                min={option.min || 0}
+                max={option.max || undefined}
+                step={option.step || 1}
+                className={cn("w-full text-center", isSpecialLayout ? "bg-background/70" : "bg-input/50")}
+            />
+         </div>
+      )}
+
 
       {option.type === 'checkbox' && (
         <div className="flex items-center justify-center space-x-2 pt-1">
@@ -261,9 +278,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           if (productOption?.type === 'checkbox') {
               return sum + (opt.value === true ? (productOption.priceModifier || 0) : 0);
           }
-          // For sliders and number_inputs, their values usually contribute to a more complex formula (handled above for oak-beams/flooring)
-          // or their price is included in basePrice or another option (e.g. garage bay slider controls quantity factored into other modifiers)
-          // So, typically, we don't add a simple priceModifier for them here unless it's a standalone cost.
           return sum + (productOption?.type !== 'slider' && productOption?.type !== 'number_input' ? (opt.priceModifier || 0) : 0); 
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
@@ -320,7 +334,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
   const handlePreview = () => {
     const serializableConfiguration = configuration.map(opt => ({
         ...opt,
-        // Ensure value is always a string for query params, especially booleans
         value: String(opt.value) 
     }));
 
@@ -340,21 +353,26 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   if (isSpecialConfigLayout) { // Garages & Gazebos
     const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
-    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); // Width Per Bay
+    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); 
     const numBaysOption = product.options.find(opt => opt.id === 'numBays');
     const otherOptions = product.options.filter(opt => opt.id !== 'trussType' && opt.id !== 'baySize' && opt.id !== 'numBays');
     
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
+          {product.id === 'garages' && (
+            <h2 className="text-2xl font-bold text-foreground text-center -mb-2">
+              Configure Your New Garage
+            </h2>
+          )}
           
-          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name)}
-          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name)}
-          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name)}
+          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name, true)}
+          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name, true)}
+          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name, true)}
           
           {otherOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product.name);
+            return renderOption(option, currentValue, handleOptionChange, product.name, true);
           })}
           
            {(product.id === 'gazebos') && (
@@ -368,7 +386,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
                 min="1"
-                className="w-24 mx-auto bg-input/50"
+                className="w-24 mx-auto bg-background/70"
               />
             </div>
           )}
@@ -383,7 +401,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
-           {product.id === 'garages' && (
+           {(product.id === 'garages') && (
              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
                <Link href="/">
                  Back to Home
@@ -407,30 +425,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         <CardContent className="space-y-6 px-4 md:px-8">
           {product.options.filter(opt => opt.id === 'oakType').map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return (
-              <div key={option.id} className="text-center">
-                <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-2">
-                  {option.name}
-                </Label>
-                <div className="mx-auto max-w-xs">
-                  <Select
-                    value={currentValue as string}
-                    onValueChange={(value) => handleOptionChange(option.id, value)}
-                  >
-                    <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
-                      <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {option.values?.map(val => (
-                        <SelectItem key={val.value} value={val.value}>
-                          {val.label} {val.priceModifier ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            );
+            return renderOption(option, currentValue, handleOptionChange, product.name, false);
           })}
 
           <div className="text-center">
@@ -439,22 +434,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
               {['lengthCm', 'widthCm', 'thicknessCm'].map(dimId => {
                 const option = product.options.find(opt => opt.id === dimId) as ProductOption | undefined;
                 if (!option) return null;
-                const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-                return (
-                  <div key={option.id} className="space-y-1">
-                    <Label htmlFor={option.id} className="text-sm text-muted-foreground">{option.name}</Label>
-                    <Input
-                      id={option.id}
-                      type="number"
-                      value={currentValue as number}
-                      onChange={(e) => handleOptionChange(option.id, parseFloat(e.target.value) || 0)}
-                      min={option.min || 0}
-                      max={option.max || undefined}
-                      step={option.step || 1}
-                      className="w-full text-center bg-input/50"
-                    />
-                  </div>
-                );
+                 return renderOption(option, getOptionValue(option.id), handleOptionChange, product.name, false);
               })}
             </div>
           </div>
@@ -502,7 +482,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         <CardContent className="space-y-6 p-6 md:p-8">
           {product.options.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product.name);
+            return renderOption(option, currentValue, handleOptionChange, product.name, false);
           })}
           <div className="text-center pt-2">
             <Label htmlFor="quantity-porches" className="text-md font-semibold text-foreground block mb-2">
@@ -547,7 +527,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       <CardContent className="space-y-6">
         {product.options.map(option => {
           const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-          return renderOption(option, currentValue, handleOptionChange, product.name);
+          return renderOption(option, currentValue, handleOptionChange, product.name, false);
         })}
         
         <div className="space-y-2 pt-4">

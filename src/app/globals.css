@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,25 +9,25 @@ body {
 
 @layer base {
   :root {
-    --background: 300 15% 97%; /* Lightest Rose */
-    --foreground: 300 10% 20%; /* Dark complementary for Lightest Rose */
-    --card: 300 15% 97%;
-    --card-foreground: 300 10% 20%;
-    --popover: 300 15% 97%;
-    --popover-foreground: 300 10% 20%;
-    --primary: 300 40% 75%; /* Gentle Rose */
-    --primary-foreground: 300 10% 20%; /* Dark complementary for Gentle Rose */
-    --secondary: 300 20% 90%;
-    --secondary-foreground: 300 10% 20%;
-    --muted: 300 15% 85%; /* Adjusted for better visibility */
-    --muted-foreground: 300 10% 45%; /* Adjusted for better contrast */
-    --accent: 270 30% 60%; /* Mellow Violet */
-    --accent-foreground: 270 15% 95%; /* Light complementary for Mellow Violet */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 300 20% 88%;
-    --input: 300 20% 88%;
-    --ring: 270 30% 60%; /* Mellow Violet for focus rings */
+    --background: 210 17% 95%; /* Very light cool gray-blue */
+    --foreground: 210 10% 25%; /* Dark cool gray-blue */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 210 10% 25%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 10% 25%;
+    --primary: 210 80% 55%; /* Medium Blue */
+    --primary-foreground: 0 0% 100%; /* White */
+    --secondary: 210 15% 90%; /* Light cool gray */
+    --secondary-foreground: 210 10% 25%;
+    --muted: 210 15% 88%; /* Slightly darker cool gray */
+    --muted-foreground: 210 10% 45%; /* Medium cool gray for text */
+    --accent: 200 85% 50%; /* Bright Cyan-Blue */
+    --accent-foreground: 0 0% 100%; /* White */
+    --destructive: 0 70% 55%; /* Adjusted Red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 10% 85%; /* Cool gray border */
+    --input: 210 10% 92%; /* Lighter cool gray for input bg */
+    --ring: 210 80% 55%; /* Medium Blue for focus rings */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -43,25 +44,25 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 300 10% 10%;
-    --foreground: 300 15% 90%;
-    --card: 300 10% 12%;
-    --card-foreground: 300 15% 90%;
-    --popover: 300 10% 12%;
-    --popover-foreground: 300 15% 90%;
-    --primary: 300 40% 65%;
-    --primary-foreground: 300 10% 15%;
-    --secondary: 300 15% 20%;
-    --secondary-foreground: 300 15% 90%;
-    --muted: 300 10% 30%;
-    --muted-foreground: 300 10% 65%;
-    --accent: 270 30% 70%;
-    --accent-foreground: 270 10% 15%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 300 10% 25%;
-    --input: 300 10% 25%;
-    --ring: 270 30% 70%;
+    --background: 210 10% 10%; /* Dark cool blue-gray */
+    --foreground: 210 15% 90%; /* Very light cool gray-blue */
+    --card: 210 10% 15%; /* Darker card bg */
+    --card-foreground: 210 15% 90%;
+    --popover: 210 10% 15%;
+    --popover-foreground: 210 15% 90%;
+    --primary: 210 80% 65%; /* Lighter Blue for dark mode */
+    --primary-foreground: 210 10% 10%; /* Dark text on primary */
+    --secondary: 210 10% 20%; /* Dark secondary elements */
+    --secondary-foreground: 210 15% 90%;
+    --muted: 210 10% 25%;
+    --muted-foreground: 210 10% 60%;
+    --accent: 200 85% 60%; /* Lighter Cyan-Blue for dark mode */
+    --accent-foreground: 210 10% 10%;
+    --destructive: 0 70% 50%; /* Adjusted Red for dark */
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 10% 25%;
+    --input: 210 10% 20%;
+    --ring: 210 80% 65%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

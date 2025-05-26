@@ -25,7 +25,7 @@ export default function BasketPage() {
       <p className="text-sm text-muted-foreground mb-10 text-center">All prices are before VAT.</p>
       
       {cartItems.length === 0 ? (
-        <Card className="text-center py-12 shadow-lg rounded-lg border-border">
+        <Card className="text-center py-12 shadow-lg rounded-lg border-border max-w-lg mx-auto">
           <CardHeader>
             <ShoppingCart className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
             <CardTitle className="text-2xl text-foreground">Your basket is empty</CardTitle>
@@ -42,8 +42,8 @@ export default function BasketPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="flex-grow lg:w-2/3">
+        <div className="flex flex-col gap-8 items-center">
+          <div className="w-full max-w-4xl">
             <div className="bg-card shadow-md rounded-lg overflow-hidden border border-border">
               <table className="w-full text-sm">
                 <thead className="text-xs text-muted-foreground uppercase bg-muted/30 ">
@@ -112,8 +112,8 @@ export default function BasketPage() {
             </div>
           </div>
 
-          <div className="lg:w-1/3">
-            <Card className="p-6 shadow-lg rounded-lg sticky top-24 border border-border">
+          <div className="w-full max-w-md">
+            <Card className="p-6 shadow-lg rounded-lg border border-border">
               <CardHeader className="p-0 pb-6">
                 <CardTitle className="text-xl font-semibold text-foreground">Order Summary</CardTitle>
               </CardHeader>

@@ -87,7 +87,7 @@ const renderOption = (
                   "relative rounded overflow-hidden mb-1",
                    isSpecialLayout ? "w-28 h-28" : "w-24 h-24"
                 )}
-                data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
+                data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')}-${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
                   <Image 
                     src={val.imageUrl} 
@@ -418,20 +418,20 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
-           {(product.id === 'garages') && (
-             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-               <Link href="/">
-                 Continue Shopping
-               </Link>
-             </Button>
-           )}
-          <Button onClick={handlePreview} variant="outline" size="lg" className="w-full sm:w-auto">
+        <CardFooter className="flex flex-col items-center gap-4 pt-2 pb-8 px-4 md:px-8">
+          <Button
+            size="lg"
+            className="w-full max-w-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+            onClick={() => handleAddToCart()}
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" /> Add to Basket
+          </Button>
+          <Button onClick={handlePreview} variant="outline" size="lg" className="w-full max-w-xs">
             <Eye className="mr-2 h-5 w-5" /> Preview Purchase
           </Button>
           <Button
             size="lg"
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            className="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold"
             onClick={() => {
               handleAddToCart("Item added to cart. Proceeding to checkout...");
               router.push('/checkout');
@@ -441,6 +441,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
               <path d="M8.326 4.111c.404-.196.606.096.48.492l-2.05 6.993c-.11.375.068.66.45.66h2.727c2.56 0 4.259-1.215 4.527-3.708.215-1.96-.859-3.016-2.739-3.016h-2.063c-.233 0-.39-.114-.31-.325l.836-2.096c.08-.21.242-.35.46-.35h2.563c.382 0 .58-.275.47-.643L11.251.53C11.141.176 10.94 0 10.557 0H4.493c-.383 0-.581.276-.471.643l1.746 4.389c.11.276-.068.562-.45.562H3.165c-2.31 0-3.621 1.5-3.165 4.027.382 2.13 1.968 3.334 4.027 3.334h1.478c.55 0 .836.383.709.909l-1.715 5.503c-.128.41.053.709.442.709h4.027l.096-.3c.128-.41.347-.677.693-.677h.958c2.822 0 5.138-1.58 5.626-4.6.382-2.406-.766-3.85-2.806-3.85h-2.096c-.347 0-.548-.259-.45-.612l1.698-5.765z"/>
             </svg>
             Pay Now
+          </Button>
+          <Button asChild variant="outline" size="lg" className="w-full max-w-xs">
+            <Link href="/">
+              Continue Shopping
+            </Link>
           </Button>
         </CardFooter>
       </Card>

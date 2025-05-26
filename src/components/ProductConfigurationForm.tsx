@@ -57,7 +57,7 @@ const renderOption = (
             <SelectContent>
               {option.values.map(val => (
                 <SelectItem key={val.value} value={val.value}>
-                  {val.label} {val.priceModifier && productName !== 'Garages' ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
+                  {val.label} {val.priceModifier && productName !== 'Garages' ? `(${val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})` : ''}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -77,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted default size back for non-special
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2",
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20"  // Adjusted default size back
+                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" 
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -98,7 +98,7 @@ const renderOption = (
                 </div>
               )}
               <span className="text-sm text-center block">{val.label}</span>
-                {val.priceModifier && productName !== 'Garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span> : ''}
+                {val.priceModifier && productName !== 'Garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})</span> : ''}
             </Label>
           ))}
         </RadioGroup>
@@ -146,7 +146,7 @@ const renderOption = (
           />
           <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
             {option.checkboxLabel || 'Yes'}
-              {option.priceModifier && productName !== 'Garages' && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
+              {option.priceModifier && productName !== 'Garages' && currentValue === true ? ` (+£${option.priceModifier.toFixed(2)})` : ''}
           </Label>
         </div>
       )}
@@ -358,13 +358,12 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
     const catSlideOption = product.options.find(opt => opt.id === 'catSlide');
     
-    // Explicitly define the order for these options
     const orderedOptions = [
         numBaysOption,
         beamSizeOption,
         baySizeOption,
         trussTypeOption,
-        catSlideOption
+        catSlideOption,
     ].filter(Boolean) as ProductOption[];
 
 
@@ -372,7 +371,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const otherOptions = product.options.filter(opt => !explicitlyHandledOptionIds.includes(opt.id));
     
     return (
-      <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
+      <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg border-2", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
           {product.id === 'garages' && (
             <>

@@ -1,36 +1,83 @@
 
-import type { Product } from '@/types';
+import type { Product, GaragePricingParams } from '@/types';
+
+const defaultGaragePricingParams: GaragePricingParams = {
+  bayPrice: 1500, // Cost per bay
+  catSlidePricePerBay: 150,
+  beamSizePrices: { // Cost per bay for this beam size
+    "6x6": 0,
+    "7x7": 200,
+    "8x8": 450,
+  },
+  trussPrices: { // One-off cost for truss type
+    "curved": 0,
+    "straight": 0, // Example: could be 100 if straight trusses are more expensive
+  },
+  baySizeMultipliers: { // Overall price multiplier
+    "standard": 1.0,
+    "large": 1.1,
+  }
+};
 
 export const mockProducts: Product[] = [
   {
     id: 'garages',
     name: 'Garages',
-    description: 'High-quality oak garages, built to last. Fully customizable options available.',
-    imageUrl: 'https://placehold.co/400x300.png',
-    basePrice: 10000,
+    description: 'High-quality oak garages, built to last. Fully customizable options available, from number of bays to truss types and beam sizes.',
+    imageUrl: 'https://placehold.co/600x400.png', // Larger main image for garage
+    basePrice: 8000, // Base price for a single standard bay, 6x6 beams, curved truss
     options: [
       {
-        id: 'size',
-        name: 'Size',
+        id: 'numBays',
+        name: 'Number of Bays',
+        type: 'slider',
+        min: 1,
+        max: 4,
+        step: 1,
+        defaultValue: 2,
+        unit: 'Bays',
+      },
+      {
+        id: 'beamSize',
+        name: 'Structural Beam Sizes',
         type: 'select',
-        defaultValue: 'single',
+        defaultValue: '6x6',
         values: [
-          { label: 'Single Bay', value: 'single' },
-          { label: 'Double Bay', value: 'double', priceModifier: 5000 },
-          { label: 'Triple Bay', value: 'triple', priceModifier: 10000 },
+          { label: '6 inch x 6 inch', value: '6x6' },
+          { label: '7 inch x 7 inch', value: '7x7' },
+          { label: '8 inch x 8 inch', value: '8x8' },
         ],
       },
       {
-        id: 'roof_type',
-        name: 'Roof Type',
+        id: 'trussType',
+        name: 'Truss Type',
         type: 'radio',
-        defaultValue: 'tile',
+        defaultValue: 'curved',
         values: [
-          { label: 'Tile', value: 'tile' },
-          { label: 'Shingle', value: 'shingle', priceModifier: -500 },
+          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75/e0bbe4/2d2d2d?text=Curved' },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75/957dad/f8f4fa?text=Straight' },
         ],
       },
+      {
+        id: 'baySize',
+        name: 'Size Per Bay',
+        type: 'select',
+        defaultValue: 'standard',
+        values: [
+          { label: 'Standard (e.g., 3m wide)', value: 'standard' },
+          { label: 'Large (e.g., 3.5m wide)', value: 'large' },
+        ],
+      },
+      {
+        id: 'catSlide',
+        name: 'Include Cat Slide Roof?',
+        description: '(Applies to all bays)', // Optional description for clarity
+        type: 'checkbox',
+        checkboxLabel: 'Yes, include cat slide roof',
+        defaultValue: false,
+      },
     ],
+    garagePricingParams: defaultGaragePricingParams,
   },
   {
     id: 'gazebos',
@@ -91,13 +138,17 @@ export const mockProducts: Product[] = [
       {
         id: 'length',
         name: 'Length (meters)',
-        type: 'select',
-        defaultValue: '3',
-        values: [
-          { label: '3m', value: '3' },
-          { label: '4m', value: '4', priceModifier: 30 },
-          { label: '5m', value: '5', priceModifier: 60 },
-        ],
+        type: 'slider', // Changed to slider for more granular control
+        min: 1,
+        max: 10,
+        step: 0.5,
+        defaultValue: 3,
+        unit: 'm',
+        // For sliders, priceModifier can be per unit (e.g. per meter)
+        // This can be handled in custom pricing or by interpreting priceModifier as $/unit.
+        // Let's assume priceModifier on the option for slider means price per unit of the slider value.
+        priceModifier: 30, // e.g., £30 per meter extra over base (if basePrice is for 1m)
+                           // Or, if basePrice is a setup cost, then it's (value * priceModifier)
       },
       {
         id: 'finish',
@@ -119,13 +170,25 @@ export const mockProducts: Product[] = [
     basePrice: 50, // Price per sq meter
     options: [
       {
+        id: 'area', // Changed from grade to area
+        name: 'Area (sq meters)',
+        type: 'slider',
+        min: 5,
+        max: 100,
+        step: 1,
+        defaultValue: 20,
+        unit: 'm²',
+        // Price modifier could be per sq meter, but basePrice already serves this.
+        // If basePrice is per m2, then total is basePrice * area + other options.
+      },
+      {
         id: 'grade',
         name: 'Grade',
         type: 'select',
         defaultValue: 'rustic',
         values: [
           { label: 'Rustic', value: 'rustic' },
-          { label: 'Prime', value: 'prime', priceModifier: 20 },
+          { label: 'Prime', value: 'prime', priceModifier: 20 }, // +£20 per m2 for prime
         ],
       },
       {
@@ -135,7 +198,7 @@ export const mockProducts: Product[] = [
         defaultValue: '150mm',
         values: [
           { label: '150mm', value: '150mm' },
-          { label: '200mm', value: '200mm', priceModifier: 10 },
+          { label: '200mm', value: '200mm', priceModifier: 10 }, // +£10 per m2 for wider boards
         ],
       },
     ],
@@ -146,14 +209,14 @@ export const mockProducts: Product[] = [
     description: 'Check out our latest special offers and discounted oak products.',
     imageUrl: 'https://placehold.co/400x300.png',
     basePrice: 0, // Placeholder
-    options: [
+    options: [ // This page doesn't use these options for configuration, it lists deals.
        {
-        id: 'offer',
-        name: 'Current Offers',
-        type: 'select',
-        defaultValue: 'none',
+        id: 'offer_info',
+        name: 'Information',
+        type: 'select', // Placeholder, not used for configuration UI on this specific page
+        defaultValue: 'view_deals',
         values: [
-          { label: 'View All Deals', value: 'all_deals' },
+          { label: 'See active promotions below.', value: 'view_deals' },
         ],
       },
     ],
@@ -164,43 +227,48 @@ export const mockFeaturedDeals: Product[] = [
   {
     id: 'pre-configured-double-garage',
     name: 'Pre-Configured Double Garage',
-    description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery.',
+    description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery. Fixed configuration.',
     imageUrl: 'https://placehold.co/200x150.png',
-    basePrice: 8500,
-    options: [ // Simplified options for a pre-configured deal
+    basePrice: 10500, // Example fixed price for this deal
+    options: [ 
+      // Typically, featured deals might have very limited or no options,
+      // or pre-selected options not shown to the user for configuration.
+      // If it has configurable parts, they should be defined here.
+      // For simplicity, let's assume this deal is non-configurable on the deal page itself.
       {
-        id: 'roof_type',
-        name: 'Roof Type',
-        type: 'select',
-        defaultValue: 'tile_standard',
+        id:'deal_info',
+        name: 'Deal Specification',
+        type: 'select', // Not for UI config, just data
+        defaultValue: '2bay_tile_roof',
         values: [
-          { label: 'Standard Tiles', value: 'tile_standard' },
-        ],
-      },
+            {label: '2 Bay, Tiled Roof, Standard Beams', value: '2bay_tile_roof'}
+        ]
+      }
     ],
   },
   {
     id: 'garden-gazebo-kit',
-    name: 'Garden Gazebo Kit',
-    description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project.',
+    name: 'Garden Gazebo Kit (3m x 3m)',
+    description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project. Includes all necessary timbers and basic plans.',
     imageUrl: 'https://placehold.co/200x150.png',
-    basePrice: 3200,
+    basePrice: 2850, // Example fixed price
     options: [
       {
-        id: 'kit_contents',
+        id:'kit_info',
         name: 'Kit Contents',
-        type: 'select',
-        defaultValue: 'full_kit',
+        type: 'select', // Not for UI config
+        defaultValue: 'standard_kit',
         values: [
-          { label: 'Full Kit', value: 'full_kit' },
-        ],
-      },
+            {label: 'Standard 3m x 3m Kit', value: 'standard_kit'}
+        ]
+      }
     ],
   },
 ];
 
 
 export const getProductById = (id: string): Product | undefined => {
+  // Ensure deals can also be fetched by ID if they are navigated to directly
   const allProducts = [...mockProducts, ...mockFeaturedDeals];
   return allProducts.find(p => p.id === id);
 };

@@ -77,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-32 h-auto p-2", // Adjusted sizes
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-32 h-auto p-2", 
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" // Adjusted image container
+                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" 
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -121,8 +121,8 @@ const renderOption = (
         </div>
       )}
       
-      {option.type === 'number_input' && ( // For Oak Beams dimensions
-         <div className="mx-auto max-w-xs"> {/* Or adjust grid layout as needed */}
+      {option.type === 'number_input' && ( 
+         <div className="mx-auto max-w-xs"> 
             <Input
                 id={option.id}
                 type="number"
@@ -358,7 +358,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
     const catSlideOption = product.options.find(opt => opt.id === 'catSlide');
     
-    // To render any other options that might be added later for garages/gazebos
     const explicitlyHandledOptionIds = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide'];
     const otherOptions = product.options.filter(opt => !explicitlyHandledOptionIds.includes(opt.id));
     
@@ -366,7 +365,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
           {product.id === 'garages' && (
-            <h2 className="text-2xl font-bold text-foreground text-center -mb-2">
+            <h2 className="text-3xl font-bold text-foreground text-center mb-6">
               Configure Your New Garage
             </h2>
           )}

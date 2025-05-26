@@ -1,16 +1,19 @@
 
-import { getProductById } from '@/lib/products';
+import { getProductById, mockFeaturedDeals } from '@/lib/products';
 import Image from 'next/image';
 import { ProductConfigurationForm } from '@/components/ProductConfigurationForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
+import { FeaturedDealCard } from '@/components/FeaturedDealCard';
+import type { Product } from '@/types';
 
 interface ProductConfigurePageProps {
   params: { productId: string };
 }
 
 export default function ProductConfigurePage({ params }: ProductConfigurePageProps) {
-  const product = getProductById(params.productId);
+  const { productId } = params;
+  const product = getProductById(productId);
 
   if (!product) {
     return (
@@ -18,6 +21,29 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
         <AlertTriangle className="w-16 h-16 text-destructive mb-4" />
         <h1 className="text-3xl font-bold text-foreground mb-2">Product Not Found</h1>
         <p className="text-muted-foreground">Sorry, the product you are looking for does not exist.</p>
+      </div>
+    );
+  }
+
+  if (productId === 'special-deals') {
+    const featuredDeals: Product[] = mockFeaturedDeals;
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{product.name}</h1>
+          {product.description && (
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{product.description}</p>
+          )}
+        </div>
+        {featuredDeals.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {featuredDeals.map((deal) => (
+              <FeaturedDealCard key={deal.id} deal={deal} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground">No special deals available at the moment. Please check back later.</p>
+        )}
       </div>
     );
   }
@@ -34,7 +60,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
                 layout="fill"
                 objectFit="cover"
                 priority
-                data-ai-hint="product image"
+                data-ai-hint={`${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} configure`}
               />
             </div>
           </CardHeader>

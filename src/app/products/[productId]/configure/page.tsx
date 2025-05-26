@@ -91,7 +91,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
         <div className="text-center mb-6 md:mb-10">
           {productId === 'gazebos' && ( 
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              {product.name}
+              Configure your gazebo
             </h1>
           )}
           {/* For garages, the main title is inside ProductConfigurationForm */}
@@ -132,4 +132,3 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
-

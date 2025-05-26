@@ -135,7 +135,7 @@ export default function CheckoutPage() {
       <div className="container mx-auto py-12 flex flex-col items-center">
         <Card className="w-full max-w-lg shadow-xl rounded-lg">
           <CardHeader className="text-center">
-            <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
+            <CreditCard className="mx-auto h-12 w-12 mb-4" />
             <CardTitle className="text-3xl font-bold text-foreground">Checkout</CardTitle>
             <CardDescription className="text-muted-foreground pt-1">
               Securely complete your purchase using PayPal.

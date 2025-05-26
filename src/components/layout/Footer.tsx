@@ -1,11 +1,21 @@
 
+import Link from 'next/link';
+
 export function Footer() {
   return (
-    <footer className="py-6 md:px-8 md:py-0 border-t border-border/40 bg-background">
-      <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row">
-        <p className="text-balance text-center text-sm leading-loose text-muted-foreground">
-          &copy; {new Date().getFullYear()} SwiftCart. All rights reserved.
+    <footer className="w-full bg-amber-900 text-amber-50 py-6">
+      <div className="container mx-auto px-4 flex flex-col items-center justify-center text-center">
+        <p className="text-xs mb-1">
+          &copy; {new Date().getFullYear()} Oak Structures. All rights reserved.
         </p>
+        <div className="flex items-center space-x-3">
+          <Link href="/privacy-policy" className="text-xs hover:underline">
+            Privacy Policy
+          </Link>
+          <Link href="/terms-of-service" className="text-xs hover:underline">
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </footer>
   );

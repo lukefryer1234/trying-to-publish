@@ -352,10 +352,15 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
 
   if (isSpecialConfigLayout) { // Garages & Gazebos
-    const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
-    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); 
     const numBaysOption = product.options.find(opt => opt.id === 'numBays');
-    const otherOptions = product.options.filter(opt => opt.id !== 'trussType' && opt.id !== 'baySize' && opt.id !== 'numBays');
+    const beamSizeOption = product.options.find(opt => opt.id === 'beamSize');
+    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); 
+    const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
+    const catSlideOption = product.options.find(opt => opt.id === 'catSlide');
+    
+    // To render any other options that might be added later for garages/gazebos
+    const explicitlyHandledOptionIds = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide'];
+    const otherOptions = product.options.filter(opt => !explicitlyHandledOptionIds.includes(opt.id));
     
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
@@ -366,9 +371,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             </h2>
           )}
           
-          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name, true)}
-          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name, true)}
           {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name, true)}
+          {beamSizeOption && renderOption(beamSizeOption, getOptionValue(beamSizeOption.id), handleOptionChange, product.name, true)}
+          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name, true)}
+          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name, true)}
+          {catSlideOption && renderOption(catSlideOption, getOptionValue(catSlideOption.id), handleOptionChange, product.name, true)}
           
           {otherOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;

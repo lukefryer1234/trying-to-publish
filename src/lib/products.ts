@@ -1,5 +1,5 @@
 
-import type { Product, GaragePricingParams } from '@/types';
+import type { Product, GaragePricingParams, ProductOption } from '@/types';
 
 const defaultGaragePricingParams: GaragePricingParams = {
   bayPrice: 1500, // Cost per bay
@@ -153,30 +153,49 @@ export const mockProducts: Product[] = [
     name: 'Oak Beams',
     description: 'Structural and decorative oak beams, cut to your specifications.',
     imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 100, 
+    basePrice: 0, // Price calculated dynamically based on dimensions
     options: [
       {
-        id: 'length',
-        name: 'Length (meters)',
-        type: 'slider', 
-        min: 1,
-        max: 10,
-        step: 0.5,
-        defaultValue: 3,
-        unit: 'm',
-        priceModifier: 30, 
-      },
-      {
-        id: 'finish',
-        name: 'Finish',
-        type: 'radio',
-        defaultValue: 'planed',
+        id: 'oakType',
+        name: 'Oak Type',
+        type: 'select',
+        defaultValue: 'green_oak',
         values: [
-          { label: 'Planed Smooth', value: 'planed' },
-          { label: 'Rough Sawn', value: 'rough_sawn', priceModifier: -10 },
+          { label: 'Green Oak', value: 'green_oak', priceModifier: 0 },
+          { label: 'Air Dried Oak', value: 'air_dried_oak', priceModifier: 20 }, // Example modifier
         ],
       },
-    ],
+      {
+        id: 'lengthCm',
+        name: 'Length (cm)',
+        type: 'number_input', // Custom type to be handled by the form
+        defaultValue: 200,
+        unit: 'cm',
+        min: 50, // Example min/max
+        max: 1000,
+        step: 1,
+      },
+      {
+        id: 'widthCm',
+        name: 'Width (cm)',
+        type: 'number_input',
+        defaultValue: 15,
+        unit: 'cm',
+        min: 5,
+        max: 50,
+        step: 1,
+      },
+      {
+        id: 'thicknessCm',
+        name: 'Thickness (cm)',
+        type: 'number_input',
+        defaultValue: 15,
+        unit: 'cm',
+        min: 5,
+        max: 50,
+        step: 1,
+      },
+    ] as ProductOption[], // Asserting as ProductOption[] to satisfy stricter type checking if `type: 'number_input'` is not fully defined in base types.
   },
   {
     id: 'oak-flooring',
@@ -242,7 +261,7 @@ export const mockFeaturedDeals: Product[] = [
     id: 'pre-configured-double-garage',
     name: 'Pre-Configured Double Garage',
     description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery. Fixed configuration.',
-    imageUrl: 'https://placehold.co/200x150.png', // data-ai-hint="double garage deal"
+    imageUrl: 'https://placehold.co/200x150.png',
     basePrice: 10500, 
     options: [ 
       {
@@ -260,7 +279,7 @@ export const mockFeaturedDeals: Product[] = [
     id: 'garden-gazebo-kit',
     name: 'Garden Gazebo Kit (3m x 3m)',
     description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project. Includes all necessary timbers and basic plans.',
-    imageUrl: 'https://placehold.co/200x150.png', // data-ai-hint="gazebo kit"
+    imageUrl: 'https://placehold.co/200x150.png',
     basePrice: 2850, 
     options: [
       {

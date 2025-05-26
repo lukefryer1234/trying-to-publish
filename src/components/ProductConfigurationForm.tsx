@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Product, SelectedConfiguration, ProductOptionValue, GaragePricingParams } from "@/types";
+import type { Product, SelectedConfiguration, ProductOptionValue, GaragePricingParams, ProductOption } from "@/types";
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShoppingCart, Eye, ArrowLeft } from "lucide-react";
+import { ShoppingCart, Eye, ArrowLeft, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 
@@ -51,7 +51,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             value = opt.values[0].value;
             priceModifier = opt.values[0].priceModifier || 0;
         }
-      } else if (opt.type === 'slider') {
+      } else if (opt.type === 'slider' || opt.type === 'number_input') {
         value = Number(opt.defaultValue);
         label = `${value} ${opt.unit || ''}`.trim();
       } else if (opt.type === 'checkbox') {
@@ -104,18 +104,28 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       
       calculatedTotal = price * (params.baySizeMultipliers[baySize] || 1.0);
 
-    } else if (product.id === 'oak-beams' || product.id === 'oak-flooring') {
+    } else if (product.id === 'oak-beams') {
+        const lengthCm = getOptionValue('lengthCm') as number || 0;
+        const widthCm = getOptionValue('widthCm') as number || 0;
+        const thicknessCm = getOptionValue('thicknessCm') as number || 0;
+        
+        // Basic volumetric pricing: (L*W*T in cubic meters) * price per cubic meter
+        // Or a simpler factor if preferred. Example: 0.0008 per cm³ from image
+        const volumeCm3 = lengthCm * widthCm * thicknessCm;
+        let price = volumeCm3 * 0.0008; // Example: $0.0008 per cm³
+
+        const oakTypeConfig = configuration.find(c => c.optionId === 'oakType');
+        if (oakTypeConfig) {
+            price += oakTypeConfig.priceModifier || 0;
+        }
+        calculatedTotal = price;
+        
+    } else if (product.id === 'oak-flooring') {
         let unitBasedPrice = 0;
         let areaOrLength = 0;
 
-        if (product.id === 'oak-beams') {
-            areaOrLength = getOptionValue('length') as number || 1;
-            const lengthOption = product.options.find(o => o.id === 'length');
-            unitBasedPrice = areaOrLength * (lengthOption?.priceModifier || product.basePrice);
-        } else if (product.id === 'oak-flooring') {
-            areaOrLength = getOptionValue('area') as number || 1;
-            unitBasedPrice = areaOrLength * product.basePrice;
-        }
+        areaOrLength = getOptionValue('area') as number || 1;
+        unitBasedPrice = areaOrLength * product.basePrice;
         
         calculatedTotal = unitBasedPrice;
 
@@ -144,9 +154,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           if (productOption?.type === 'checkbox') {
               return sum + (opt.value === true ? (productOption.priceModifier || 0) : 0);
           }
-          // For select/radio, the priceModifier is already on the selected opt.
-          // For sliders in simple products, their own priceModifier isn't used directly in this sum, it's part of base if unit priced.
-          return sum + (productOption?.type !== 'slider' ? (opt.priceModifier || 0) : 0); 
+          return sum + (productOption?.type !== 'slider' && productOption?.type !== 'number_input' ? (opt.priceModifier || 0) : 0); 
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
     }
@@ -166,7 +174,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     if (!productOption) return;
 
     let newLabel = '';
-    let newPriceModifier = 0; 
+    let newPriceModifier = productOption.priceModifier || 0; // For number_input, base this on the option itself if needed
 
     if (productOption.type === 'select' || productOption.type === 'radio') {
       const valueObj = productOption.values?.find(v => v.value === (newValue as string));
@@ -174,9 +182,16 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         newLabel = valueObj.label;
         newPriceModifier = valueObj.priceModifier || 0;
       }
-    } else if (productOption.type === 'slider') {
-      newLabel = `${newValue} ${productOption.unit || ''}`.trim();
-      // For sliders, the priceModifier might be per unit, handled in calculatePrice
+    } else if (productOption.type === 'slider' || productOption.type === 'number_input') {
+      const numericValue = Number(newValue);
+      newLabel = `${numericValue} ${productOption.unit || ''}`.trim();
+      // For number_input, priceModifier is often part of a larger calculation, not directly summed per unit
+      // unless explicitly defined (e.g. price per cm).
+      // For oak beams, the priceModifier on the option object itself (like air_dried_oak) is used.
+      // Price for dimensions is handled in calculatePrice.
+      if (productOption.type === 'number_input' && productOption.id !== 'lengthCm' && productOption.id !== 'widthCm' && productOption.id !== 'thicknessCm') {
+        // Only apply direct priceModifier for non-dimension number_inputs if that's the design
+      }
     } else if (productOption.type === 'checkbox') {
       newLabel = newValue ? (productOption.checkboxLabel || 'Yes') : ('No');
       newPriceModifier = newValue ? (productOption.priceModifier || 0) : 0;
@@ -191,10 +206,10 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     );
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (message?: string) => {
     addToCart(product, quantity, configuration);
     toast({
-      title: "Added to Cart!",
+      title: message || "Added to Cart!",
       description: `${product.name} (x${quantity}) has been added to your basket.`,
     });
   };
@@ -215,6 +230,8 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
   const totalPrice = currentPrice * quantity;
 
   const isSpecialConfigLayout = product.id === 'garages' || product.id === 'gazebos';
+  const isOakBeamsLayout = product.id === 'oak-beams';
+
 
   if (isSpecialConfigLayout) {
     return (
@@ -315,8 +332,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             )
           })}
           
-           {/* Quantity Input for Gazebos, but not for Garages in this layout */}
-           {product.id === 'gazebos' && (
+           {(product.id === 'gazebos') && (
             <div className="text-center pt-4">
               <Label htmlFor="quantity-special" className="text-md font-semibold text-foreground block mb-3">
                 Quantity
@@ -357,7 +373,102 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     );
   }
 
-  // Default form for other products
+  if (isOakBeamsLayout) {
+    return (
+      <Card className="w-full max-w-lg mx-auto shadow-xl rounded-lg">
+        <CardHeader className="text-center pb-4">
+          <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your Oak Beams</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6 px-4 md:px-8">
+          {product.options.filter(opt => opt.id === 'oakType').map(option => {
+            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
+            return (
+              <div key={option.id} className="text-center">
+                <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-2">
+                  {option.name}
+                </Label>
+                <div className="mx-auto max-w-xs">
+                  <Select
+                    value={currentValue as string}
+                    onValueChange={(value) => handleOptionChange(option.id, value)}
+                  >
+                    <SelectTrigger id={option.id} className="w-full bg-input/50">
+                      <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {option.values?.map(val => (
+                        <SelectItem key={val.value} value={val.value}>
+                          {val.label} {val.priceModifier ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            );
+          })}
+
+          <div className="text-center">
+            <Label className="text-md font-semibold text-foreground block mb-3">Dimensions (cm)</Label>
+            <div className="grid grid-cols-3 gap-3 mx-auto max-w-md">
+              {['lengthCm', 'widthCm', 'thicknessCm'].map(dimId => {
+                const option = product.options.find(opt => opt.id === dimId) as ProductOption | undefined;
+                if (!option) return null;
+                const currentValue = configuration.find(c => c.optionId === option.id)?.value;
+                return (
+                  <div key={option.id} className="space-y-1">
+                    <Label htmlFor={option.id} className="text-sm text-muted-foreground">{option.name}</Label>
+                    <Input
+                      id={option.id}
+                      type="number"
+                      value={currentValue as number}
+                      onChange={(e) => handleOptionChange(option.id, parseFloat(e.target.value) || 0)}
+                      min={option.min || 0}
+                      max={option.max || undefined}
+                      step={option.step || 1}
+                      className="w-full text-center bg-input/50"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="text-center pt-2">
+            <Label htmlFor="quantity-oak-beams" className="text-md font-semibold text-foreground block mb-2">
+              Quantity
+            </Label>
+            <Input
+              id="quantity-oak-beams"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+              min="1"
+              className="w-24 mx-auto bg-input/50"
+            />
+          </div>
+
+          <Separator className="my-4" />
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-1">Estimated Price for this Beam (excl. VAT & Delivery)</p>
+            <p className="text-2xl font-bold text-foreground">
+              ${totalPrice.toFixed(2)}
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 pt-6 pb-8">
+          <Button onClick={() => handleAddToCart("Added to Cutting List")} variant="default" size="lg" className="w-full sm:w-auto bg-slate-600 hover:bg-slate-700 text-white">
+            <Plus className="mr-2 h-5 w-5" /> Add to Cutting List
+          </Button>
+          <Button onClick={() => handleAddToCart("Added Direct to Basket")} variant="outline" size="lg" className="w-full sm:w-auto">
+            <ShoppingCart className="mr-2 h-5 w-5" /> Add Direct to Basket
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  // Default form for other products (e.g. Porches, Oak Flooring)
   return (
     <Card className="w-full shadow-xl rounded-lg">
       <CardHeader>
@@ -439,6 +550,22 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                   </div>
                 </div>
               )}
+               {option.type === 'number_input' && (
+                 <div className="space-y-2 pt-1">
+                    <Input
+                        id={option.id}
+                        type="number"
+                        value={currentValue as number}
+                        onChange={(e) => handleOptionChange(option.id, parseFloat(e.target.value) || 0)}
+                        min={option.min || 0}
+                        max={option.max || undefined}
+                        step={option.step || 1}
+                        className="w-full bg-input/50"
+                    />
+                     {option.unit && <div className="text-center text-sm text-muted-foreground">{currentValue as number} {option.unit}</div>}
+                 </div>
+                )}
+
 
               {option.type === 'checkbox' && (
                 <div className="flex items-center space-x-2 pt-1">
@@ -480,11 +607,10 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         <Button onClick={handlePreview} variant="outline" size="lg" className="w-full sm:w-auto">
           <Eye className="mr-2 h-5 w-5" /> Preview Configuration
         </Button>
-        <Button onClick={handleAddToCart} size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button onClick={()=> handleAddToCart()} size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
         </Button>
       </CardFooter>
     </Card>
   );
 }
-

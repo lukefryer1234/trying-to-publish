@@ -57,7 +57,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
-  // Centered layout for garages and gazebos
+  // Centered layout for garages, gazebos
   if (productId === 'garages' || productId === 'gazebos') {
     return (
       <div className="container mx-auto py-8">
@@ -69,6 +69,16 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
             </p>
           )}
         </div>
+        <ProductConfigurationForm product={product} />
+      </div>
+    );
+  }
+
+  // Centered layout for oak beams (form handles its own title)
+  if (productId === 'oak-beams') {
+    return (
+      <div className="container mx-auto py-8">
+        {/* Title and description are handled within the form for oak-beams */}
         <ProductConfigurationForm product={product} />
       </div>
     );
@@ -104,4 +114,3 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
-

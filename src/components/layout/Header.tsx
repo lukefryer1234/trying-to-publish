@@ -21,9 +21,9 @@ export function Header() {
   const cartTotal = isClient ? getCartTotal() : 0;
   const itemCount = isClient ? getItemCount() : 0;
 
-  const formattedCartTotal = new Intl.NumberFormat('en-US', {
+  const formattedCartTotal = new Intl.NumberFormat('en-GB', { // Changed to en-GB
     style: 'currency',
-    currency: 'USD',
+    currency: 'GBP', // Changed to GBP
   }).format(cartTotal);
 
   const productsForMenu = mockProducts.filter(p => p.id !== 'special-deals');
@@ -63,19 +63,18 @@ export function Header() {
         </div>
         
         <nav className="flex items-center space-x-3 sm:space-x-4">
+          {isClient && (
+            <span className="text-sm font-medium text-muted-foreground hidden sm:inline">
+              {formattedCartTotal}
+            </span>
+          )}
           <Link href="/basket" passHref>
-            <Button variant="ghost" className="relative flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2 sm:p-2">
+            <Button variant="ghost" className="relative flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2 sm:p-2" aria-label="Shopping basket">
               <ShoppingBag className="h-5 w-5" />
               {isClient && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                   {itemCount}
                 </span>
-              )}
-              {isClient && cartTotal > 0 && (
-                <span className="ml-2 hidden sm:inline">{formattedCartTotal}</span>
-              )}
-              {isClient && cartTotal === 0 && !itemCount && (
-                 <span className="ml-2 hidden sm:inline">$0.00</span>
               )}
             </Button>
           </Link>

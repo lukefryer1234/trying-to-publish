@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ShoppingBag, Menu, Home } from 'lucide-react';
+import { ShoppingCart, Menu, Home } from 'lucide-react'; // Changed ShoppingBag to ShoppingCart
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,19 +13,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockProducts } from '@/lib/products'; // To get product list for menu
+import { mockProducts } from '@/lib/products'; 
 
 export function Header() {
-  const { getItemCount, isClient } = useCart(); // Removed getCartTotal as it's no longer displayed here
+  const { getItemCount, getCartTotal, isClient } = useCart(); 
   
   const itemCount = isClient ? getItemCount() : 0;
-
-  // formattedCartTotal is no longer needed here as the price display is removed
-  // const cartTotal = isClient ? getCartTotal() : 0;
-  // const formattedCartTotal = new Intl.NumberFormat('en-GB', {
-  //   style: 'currency',
-  //   currency: 'GBP',
-  // }).format(cartTotal);
+  const cartTotal = isClient ? getCartTotal() : 0;
+  
+  const formattedCartTotal = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+  }).format(cartTotal);
 
   const productsForMenu = mockProducts.filter(p => p.id !== 'special-deals');
 
@@ -63,11 +62,15 @@ export function Header() {
           </Link>
         </div>
         
-        <nav className="flex items-center"> {/* Removed space-x classes as only one item remains */}
-          {/* The cart total price display <span/> has been removed */}
+        <nav className="flex items-center space-x-3"> {/* Added space-x-3 for spacing */}
+          {isClient && (
+            <span className="text-sm font-medium text-muted-foreground">
+              {formattedCartTotal}
+            </span>
+          )}
           <Link href="/basket" passHref>
             <Button variant="ghost" className="relative flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2 sm:p-2" aria-label="Shopping basket">
-              <ShoppingBag className="h-6 w-6" />
+              <ShoppingCart className="h-6 w-6" /> {/* Changed to ShoppingCart */}
               {isClient && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                   {itemCount}

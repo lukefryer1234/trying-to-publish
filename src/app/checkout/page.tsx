@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, ShoppingCart, Lock } from "lucide-react";
+import { ShoppingCart, Lock } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import { useEffect, useState } from "react"; 
@@ -135,7 +135,7 @@ export default function CheckoutPage() {
       <div className="container mx-auto py-12 flex flex-col items-center">
         <Card className="w-full max-w-lg shadow-xl rounded-lg">
           <CardHeader className="text-center">
-            <CreditCard className="mx-auto h-12 w-12 mb-4" />
+            {/* CreditCard icon removed here */}
             <CardTitle className="text-3xl font-bold text-foreground">Checkout</CardTitle>
             <CardDescription className="text-muted-foreground pt-1">
               Securely complete your purchase using PayPal.

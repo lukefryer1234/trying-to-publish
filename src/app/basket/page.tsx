@@ -14,8 +14,8 @@ export default function BasketPage() {
     return <div className="text-center py-10 text-muted-foreground">Loading basket...</div>;
   }
 
-  const totalItems = getItemCount();
   const totalPrice = getCartTotal();
+  const totalItems = getItemCount();
 
   return (
     <div className="container mx-auto py-8">
@@ -36,42 +36,10 @@ export default function BasketPage() {
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start">
-          {/* Order Summary Section (Left on LG, First on Mobile) */}
-          <div className="w-full lg:w-1/3 lg:order-1">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">Order Summary</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal ({totalItems} item{totalItems === 1 ? '' : 's'})</span>
-                <span className="text-foreground">${totalPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Shipping</span>
-                <span className="text-primary font-medium">FREE</span>
-              </div>
-              <Separator className="my-4" />
-              <div className="flex justify-between text-xl font-bold text-foreground">
-                <span>Order Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
-              </div>
-            </div>
-            <div className="mt-8 flex flex-col gap-3">
-              <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/checkout">
-                  Proceed to Checkout <CreditCard className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="w-full">
-                <Link href="/">
-                  <ArrowRight className="mr-2 h-5 w-5 transform rotate-180" /> Continue Shopping
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Items Table Section (Right on LG, Second on Mobile) */}
-          <div className="w-full lg:w-2/3 lg:order-2">
-            <table className="w-full text-sm">
+        <div className="w-full flex flex-col items-center">
+          {/* Items Table Section */}
+          <div className="w-full lg:w-5/6 xl:w-4/5 overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
               <thead className="border-b border-border">
                 <tr>
                   <th scope="col" className="px-4 sm:px-6 py-4 font-semibold text-left text-muted-foreground uppercase text-xs tracking-wider">Product Details</th>
@@ -136,9 +104,30 @@ export default function BasketPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Simplified Order Summary & Actions */}
+          <div className="w-full lg:w-5/6 xl:w-4/5 mt-8 px-4 sm:px-0 flex flex-col md:flex-row justify-between items-start md:items-end">
+            <div className="mb-6 md:mb-0">
+              <span className="text-2xl font-bold text-foreground">Order Total: </span>
+              <span className="text-2xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
+               <p className="text-xs text-muted-foreground mt-1">Shipping calculated at checkout.</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                <Link href="/">
+                  <ArrowRight className="mr-2 h-5 w-5 transform rotate-180" /> Continue Shopping
+                </Link>
+              </Button>
+              <Button asChild size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Link href="/checkout">
+                  Proceed to Checkout <CreditCard className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
 }
-

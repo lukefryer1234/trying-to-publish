@@ -85,13 +85,14 @@ const renderOption = (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
                   "w-28 h-28" // Square image container
-                )}>
+                )}
+                data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
+                >
                   <Image 
                     src={val.imageUrl} 
                     alt={val.label} 
                     layout="fill" 
                     objectFit="cover" 
-                    data-ai-hint={`${productName.toLowerCase().replace(' ', '')} ${val.label.toLowerCase().replace(' ', '')}`}
                   />
                 </div>
               )}
@@ -197,7 +198,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       const numBays = getOptionValue('numBays') as number || 1;
       const beamSize = getOptionValue('beamSize') as string || '6x6';
       const trussType = getOptionValue('trussType') as string || 'curved';
-      const baySize = getOptionValue('baySize') as string || 'standard';
+      const baySize = getOptionValue('baySize') as string || 'standard'; // Width Per Bay
       const catSlide = getOptionValue('catSlide') as boolean || false;
 
       let price = product.basePrice; 
@@ -338,14 +339,16 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
 
   if (isSpecialConfigLayout) { // Garages & Gazebos
+    const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
+    const baySizeOption = product.options.find(opt => opt.id === 'baySize'); // Width Per Bay
     const numBaysOption = product.options.find(opt => opt.id === 'numBays');
-    const baySizeOption = product.options.find(opt => opt.id === 'baySize');
-    const otherOptions = product.options.filter(opt => opt.id !== 'numBays' && opt.id !== 'baySize');
+    const otherOptions = product.options.filter(opt => opt.id !== 'trussType' && opt.id !== 'baySize' && opt.id !== 'numBays');
     
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
           
+          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name)}
           {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name)}
           {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name)}
           

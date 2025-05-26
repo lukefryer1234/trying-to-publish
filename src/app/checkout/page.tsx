@@ -53,7 +53,6 @@ export default function CheckoutPage() {
               console.log("Attempting to create order with amount:", totalPrice.toFixed(2));
               // Simulate calling your server to create a PayPal order
               // Your server would then call PayPal's API and return an orderID
-              alert("SIMULATING: Contacting server to create PayPal order...");
               // For this example, we'll create the order directly on the client-side.
               // In a real app, you might fetch an orderID from your server here:
               // const orderID = await fetch('/api/paypal/create-order', {
@@ -64,6 +63,7 @@ export default function CheckoutPage() {
               // return orderID;
               
               // Client-side order creation (as before, for simplicity in this example)
+              alert("SIMULATING: Contacting server to create PayPal order...");
               return actions.order.create({
                 purchase_units: [{
                   amount: {
@@ -78,7 +78,6 @@ export default function CheckoutPage() {
             onApprove: async (data: any, actions: any) => {
               console.log("Order approved by user:", data);
               // Simulate calling your server to capture the PayPal order
-              alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
               
               // For this example, we'll capture the order directly on the client-side.
               // In a real app, you might send data.orderID to your server to finalize capture:
@@ -89,6 +88,7 @@ export default function CheckoutPage() {
               // });
 
               // Client-side order capture (as before for simplicity)
+              alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
               return actions.order.capture().then((details: any) => {
                 alert(`Transaction completed by ${details.payer.name.given_name}! Order ID: ${data.orderID}`);
                 // TODO: Redirect to an order confirmation page, clear cart, etc.
@@ -115,6 +115,7 @@ export default function CheckoutPage() {
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPayPalSdkReady, totalPrice, itemCount, cartItems, isClient]); // Added cartItems and isClient to dependencies
 
 
@@ -140,7 +141,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Script 
-        src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID_HERE&currency=GBP&components=buttons&enable-funding=paylater,card"
+        src="https://www.paypal.com/sdk/js?client-id=AVrdZkjO4CpPX8mNf7tEDUbhBekgtsR6SR-h8X5wne5uCZc2U5SCELJcrax-q_7Ld1rdi6261UfIA5z9&currency=GBP&components=buttons&enable-funding=paylater,card"
         strategy="afterInteractive"
         onLoad={() => {
           console.log("PayPal SDK loaded.");

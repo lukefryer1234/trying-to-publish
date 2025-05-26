@@ -16,15 +16,16 @@ import {
 import { mockProducts } from '@/lib/products'; // To get product list for menu
 
 export function Header() {
-  const { getCartTotal, getItemCount, isClient } = useCart();
+  const { getItemCount, isClient } = useCart(); // Removed getCartTotal as it's no longer displayed here
   
-  const cartTotal = isClient ? getCartTotal() : 0;
   const itemCount = isClient ? getItemCount() : 0;
 
-  const formattedCartTotal = new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-  }).format(cartTotal);
+  // formattedCartTotal is no longer needed here as the price display is removed
+  // const cartTotal = isClient ? getCartTotal() : 0;
+  // const formattedCartTotal = new Intl.NumberFormat('en-GB', {
+  //   style: 'currency',
+  //   currency: 'GBP',
+  // }).format(cartTotal);
 
   const productsForMenu = mockProducts.filter(p => p.id !== 'special-deals');
 
@@ -62,12 +63,8 @@ export function Header() {
           </Link>
         </div>
         
-        <nav className="flex items-center space-x-3 sm:space-x-4">
-          {isClient && (
-            <span className="text-sm font-medium text-muted-foreground hidden sm:inline">
-              {formattedCartTotal}
-            </span>
-          )}
+        <nav className="flex items-center"> {/* Removed space-x classes as only one item remains */}
+          {/* The cart total price display <span/> has been removed */}
           <Link href="/basket" passHref>
             <Button variant="ghost" className="relative flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2 sm:p-2" aria-label="Shopping basket">
               <ShoppingBag className="h-6 w-6" />

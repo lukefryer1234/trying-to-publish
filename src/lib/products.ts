@@ -24,8 +24,8 @@ export const mockProducts: Product[] = [
     id: 'garages',
     name: 'Garages',
     description: 'High-quality oak garages, built to last. Fully customizable options available, from number of bays to truss types and beam sizes.',
-    imageUrl: 'https://placehold.co/600x400.png', // Larger main image for garage
-    basePrice: 8000, // Base price for a single standard bay, 6x6 beams, curved truss
+    imageUrl: 'https://placehold.co/600x400.png', 
+    basePrice: 8000, 
     options: [
       {
         id: 'numBays',
@@ -54,8 +54,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: 'curved',
         values: [
-          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75/e0bbe4/2d2d2d?text=Curved' },
-          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75/957dad/f8f4fa?text=Straight' },
+          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75.png' },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75.png' },
         ],
       },
       {
@@ -71,7 +71,7 @@ export const mockProducts: Product[] = [
       {
         id: 'catSlide',
         name: 'Include Cat Slide Roof?',
-        description: '(Applies to all bays)', // Optional description for clarity
+        description: '(Applies to all bays)', 
         type: 'checkbox',
         checkboxLabel: 'Yes, include cat slide roof',
         defaultValue: false,
@@ -83,7 +83,7 @@ export const mockProducts: Product[] = [
     id: 'gazebos',
     name: 'Gazebos',
     description: 'Elegant oak gazebos to enhance your garden space. Perfect for outdoor relaxation.',
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://placehold.co/600x400.png',
     basePrice: 3000,
     options: [
       {
@@ -113,7 +113,7 @@ export const mockProducts: Product[] = [
     id: 'porches',
     name: 'Porches',
     description: 'Add character to your home with a beautifully crafted oak porch.',
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://placehold.co/600x400.png',
     basePrice: 2500,
     options: [
        {
@@ -132,23 +132,19 @@ export const mockProducts: Product[] = [
     id: 'oak-beams',
     name: 'Oak Beams',
     description: 'Structural and decorative oak beams, cut to your specifications.',
-    imageUrl: 'https://placehold.co/400x300.png',
-    basePrice: 100, // Price per meter or unit
+    imageUrl: 'https://placehold.co/600x400.png',
+    basePrice: 100, 
     options: [
       {
         id: 'length',
         name: 'Length (meters)',
-        type: 'slider', // Changed to slider for more granular control
+        type: 'slider', 
         min: 1,
         max: 10,
         step: 0.5,
         defaultValue: 3,
         unit: 'm',
-        // For sliders, priceModifier can be per unit (e.g. per meter)
-        // This can be handled in custom pricing or by interpreting priceModifier as $/unit.
-        // Let's assume priceModifier on the option for slider means price per unit of the slider value.
-        priceModifier: 30, // e.g., £30 per meter extra over base (if basePrice is for 1m)
-                           // Or, if basePrice is a setup cost, then it's (value * priceModifier)
+        priceModifier: 30, 
       },
       {
         id: 'finish',
@@ -166,11 +162,11 @@ export const mockProducts: Product[] = [
     id: 'oak-flooring',
     name: 'Oak Flooring',
     description: 'Durable and timeless solid oak flooring for a premium finish.',
-    imageUrl: 'https://placehold.co/400x300.png',
-    basePrice: 50, // Price per sq meter
+    imageUrl: 'https://placehold.co/600x400.png',
+    basePrice: 50, 
     options: [
       {
-        id: 'area', // Changed from grade to area
+        id: 'area', 
         name: 'Area (sq meters)',
         type: 'slider',
         min: 5,
@@ -178,8 +174,6 @@ export const mockProducts: Product[] = [
         step: 1,
         defaultValue: 20,
         unit: 'm²',
-        // Price modifier could be per sq meter, but basePrice already serves this.
-        // If basePrice is per m2, then total is basePrice * area + other options.
       },
       {
         id: 'grade',
@@ -188,7 +182,7 @@ export const mockProducts: Product[] = [
         defaultValue: 'rustic',
         values: [
           { label: 'Rustic', value: 'rustic' },
-          { label: 'Prime', value: 'prime', priceModifier: 20 }, // +£20 per m2 for prime
+          { label: 'Prime', value: 'prime', priceModifier: 20 }, 
         ],
       },
       {
@@ -198,7 +192,7 @@ export const mockProducts: Product[] = [
         defaultValue: '150mm',
         values: [
           { label: '150mm', value: '150mm' },
-          { label: '200mm', value: '200mm', priceModifier: 10 }, // +£10 per m2 for wider boards
+          { label: '200mm', value: '200mm', priceModifier: 10 }, 
         ],
       },
     ],
@@ -207,13 +201,13 @@ export const mockProducts: Product[] = [
     id: 'special-deals',
     name: 'Special Deals',
     description: 'Check out our latest special offers and discounted oak products.',
-    imageUrl: 'https://placehold.co/400x300.png',
-    basePrice: 0, // Placeholder
-    options: [ // This page doesn't use these options for configuration, it lists deals.
+    imageUrl: 'https://placehold.co/600x400.png',
+    basePrice: 0, 
+    options: [ 
        {
         id: 'offer_info',
         name: 'Information',
-        type: 'select', // Placeholder, not used for configuration UI on this specific page
+        type: 'select', 
         defaultValue: 'view_deals',
         values: [
           { label: 'See active promotions below.', value: 'view_deals' },
@@ -229,16 +223,12 @@ export const mockFeaturedDeals: Product[] = [
     name: 'Pre-Configured Double Garage',
     description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery. Fixed configuration.',
     imageUrl: 'https://placehold.co/200x150.png',
-    basePrice: 10500, // Example fixed price for this deal
+    basePrice: 10500, 
     options: [ 
-      // Typically, featured deals might have very limited or no options,
-      // or pre-selected options not shown to the user for configuration.
-      // If it has configurable parts, they should be defined here.
-      // For simplicity, let's assume this deal is non-configurable on the deal page itself.
       {
         id:'deal_info',
         name: 'Deal Specification',
-        type: 'select', // Not for UI config, just data
+        type: 'select', 
         defaultValue: '2bay_tile_roof',
         values: [
             {label: '2 Bay, Tiled Roof, Standard Beams', value: '2bay_tile_roof'}
@@ -251,12 +241,12 @@ export const mockFeaturedDeals: Product[] = [
     name: 'Garden Gazebo Kit (3m x 3m)',
     description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project. Includes all necessary timbers and basic plans.',
     imageUrl: 'https://placehold.co/200x150.png',
-    basePrice: 2850, // Example fixed price
+    basePrice: 2850, 
     options: [
       {
         id:'kit_info',
         name: 'Kit Contents',
-        type: 'select', // Not for UI config
+        type: 'select', 
         defaultValue: 'standard_kit',
         values: [
             {label: 'Standard 3m x 3m Kit', value: 'standard_kit'}
@@ -268,7 +258,6 @@ export const mockFeaturedDeals: Product[] = [
 
 
 export const getProductById = (id: string): Product | undefined => {
-  // Ensure deals can also be fetched by ID if they are navigated to directly
   const allProducts = [...mockProducts, ...mockFeaturedDeals];
   return allProducts.find(p => p.id === id);
 };

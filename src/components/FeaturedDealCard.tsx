@@ -7,14 +7,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 interface FeaturedDealCardProps {
-  deal: Product; // Reusing Product type for simplicity
+  deal: Product; 
 }
 
 export function FeaturedDealCard({ deal }: FeaturedDealCardProps) {
   const dataAiHint = deal.name.toLowerCase().split(' ').slice(0, 2).join(' ');
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD', // Placeholder
+    currency: 'USD', 
   }).format(deal.basePrice);
 
   return (
@@ -25,7 +25,7 @@ export function FeaturedDealCard({ deal }: FeaturedDealCardProps) {
           alt={deal.name}
           layout="fill"
           objectFit="cover"
-          data-ai-hint={dataAiHint + " deal"}
+          data-ai-hint={`${dataAiHint} deal`}
         />
       </div>
       <div className="flex flex-col justify-between p-4 sm:p-6 flex-grow">

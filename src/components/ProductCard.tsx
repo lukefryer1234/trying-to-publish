@@ -10,10 +10,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const dataAiHint = product.name.toLowerCase().split(' ').slice(0, 2).join(' ');
-
-  // Placeholder for brownish/gold background similar to the image
-  // You might want to define this as a custom Tailwind color or use a more specific utility
-  const cardBackgroundColor = product.name === "Special Deals" ? "bg-slate-700" : "bg-yellow-700/20"; // Example color
+  const cardBackgroundColor = product.name === "Special Deals" ? "bg-slate-700" : "bg-yellow-700/20";
 
   return (
     <Link href={`/products/${product.id}/configure`} className="block group">

@@ -30,7 +30,7 @@ interface ProductConfigurationFormProps {
 
 export function ProductConfigurationForm({ product }: ProductConfigurationFormProps) {
   const router = useRouter();
-  const params = useParams(); // Get params if needed, e.g. for specific product logic
+  const params = useParams(); 
   const { addToCart } = useCart();
   const { toast } = useToast();
   
@@ -45,8 +45,8 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         if (selectedValueObj) {
           label = selectedValueObj.label;
           priceModifier = selectedValueObj.priceModifier || 0;
-          value = selectedValueObj.value; // ensure value is from the object
-        } else if (opt.values?.[0]) { // Fallback to first option if defaultValue is invalid
+          value = selectedValueObj.value; 
+        } else if (opt.values?.[0]) { 
             label = opt.values[0].label;
             value = opt.values[0].value;
             priceModifier = opt.values[0].priceModifier || 0;
@@ -54,11 +54,10 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       } else if (opt.type === 'slider') {
         value = Number(opt.defaultValue);
         label = `${value} ${opt.unit || ''}`.trim();
-        // priceModifier for slider is handled in custom logic mostly
       } else if (opt.type === 'checkbox') {
         value = Boolean(opt.defaultValue);
-        label = opt.checkboxLabel || 'Enabled'; // General label
-        if (value === true) { // priceModifier applies if checked
+        label = opt.checkboxLabel || 'Enabled'; 
+        if (value === true) { 
             priceModifier = opt.priceModifier || 0;
         } else {
             priceModifier = 0;
@@ -76,7 +75,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   const [configuration, setConfiguration] = useState<SelectedConfiguration[]>(initializeConfiguration());
   const [quantity, setQuantity] = useState(1);
-  const [currentPrice, setCurrentPrice] = useState(0); // Initialize to 0, calculate on mount
+  const [currentPrice, setCurrentPrice] = useState(0); 
 
   const getOptionValue = useCallback((optionId: string): string | number | boolean | undefined => {
     return configuration.find(c => c.optionId === optionId)?.value;
@@ -93,33 +92,24 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       const baySize = getOptionValue('baySize') as string || 'standard';
       const catSlide = getOptionValue('catSlide') as boolean || false;
 
-      let price = product.basePrice; // Start with product base (e.g. for 1 bay)
+      let price = product.basePrice; 
       
-      // Adjust for number of bays (base price is for 1 bay, add cost for additional bays)
-      price += (numBays -1) * params.bayPrice; // If base price is not for 1 bay, then it is numBays * params.bayPrice
-
-      // Cost for beam size (per bay)
+      price += (numBays -1) * params.bayPrice; 
       price += (params.beamSizePrices[beamSize] || 0) * numBays;
-      
-      // Cost for truss type (one-off)
       price += params.trussPrices[trussType] || 0;
       
-      // Cost for cat slide (per bay)
       if (catSlide) {
         price += params.catSlidePricePerBay * numBays;
       }
       
-      // Apply bay size multiplier to the subtotal
       calculatedTotal = price * (params.baySizeMultipliers[baySize] || 1.0);
 
     } else if (product.id === 'oak-beams' || product.id === 'oak-flooring') {
-        // Custom pricing for items priced per unit (e.g. per meter or per m2)
         let unitBasedPrice = 0;
         let areaOrLength = 0;
 
         if (product.id === 'oak-beams') {
             areaOrLength = getOptionValue('length') as number || 1;
-            // basePrice is per unit, or option priceModifier is per unit
             const lengthOption = product.options.find(o => o.id === 'length');
             unitBasedPrice = areaOrLength * (lengthOption?.priceModifier || product.basePrice);
         } else if (product.id === 'oak-flooring') {
@@ -129,17 +119,14 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         
         calculatedTotal = unitBasedPrice;
 
-        // Add modifiers from other options
         configuration.forEach(opt => {
             const productOption = product.options.find(po => po.id === opt.optionId);
-            if (productOption && productOption.type !== 'slider') { // Slider price handled above
+            if (productOption && productOption.type !== 'slider') { 
                  if (productOption.type === 'checkbox' && opt.value === true) {
                     calculatedTotal += productOption.priceModifier || 0;
                  } else if (productOption.type !== 'checkbox') {
-                    // For select/radio, priceModifier is on ProductOptionValue
                     const selectedValueObj = productOption.values?.find(v => v.value === opt.value);
                     if (selectedValueObj) {
-                        // For flooring, modifiers are often per m2
                         if (product.id === 'oak-flooring') {
                             calculatedTotal += (selectedValueObj.priceModifier || 0) * areaOrLength;
                         } else {
@@ -150,19 +137,18 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             }
         });
 
-    } else { // Generic pricing for other products
+    } else { 
       const optionsPrice = configuration.reduce((sum, opt) => {
-          // For checkboxes, priceModifier is on ProductOption itself if checked
           if (product.options.find(po => po.id === opt.optionId)?.type === 'checkbox') {
               return sum + (opt.value === true ? (product.options.find(po => po.id === opt.optionId)?.priceModifier || 0) : 0);
           }
-          return sum + (opt.priceModifier || 0); // opt.priceModifier should be from ProductOptionValue for select/radio
+          return sum + (opt.priceModifier || 0); 
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
     }
     
     setCurrentPrice(calculatedTotal);
-  }, [configuration, product]);
+  }, [configuration, product, getOptionValue]);
 
   useEffect(() => {
     calculatePrice();
@@ -176,7 +162,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     if (!productOption) return;
 
     let newLabel = '';
-    let newPriceModifier = 0; // This is the price modifier of the *specific option value chosen*
+    let newPriceModifier = 0; 
 
     if (productOption.type === 'select' || productOption.type === 'radio') {
       const valueObj = productOption.values?.find(v => v.value === (newValue as string));
@@ -186,8 +172,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       }
     } else if (productOption.type === 'slider') {
       newLabel = `${newValue} ${productOption.unit || ''}`.trim();
-      // priceModifier for slider is complex, not a simple value.
-      // The effect of slider on price is handled directly in calculatePrice.
     } else if (productOption.type === 'checkbox') {
       newLabel = newValue ? (productOption.checkboxLabel || 'Yes') : ('No');
       newPriceModifier = newValue ? (productOption.priceModifier || 0) : 0;
@@ -211,16 +195,14 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
   };
 
   const handlePreview = () => {
-    // Ensure configuration values are stringified correctly for URL
     const serializableConfiguration = configuration.map(opt => ({
         ...opt,
-        value: String(opt.value) // Convert all values to string for query param
+        value: String(opt.value) 
     }));
 
     const queryParams = new URLSearchParams({
-      //productId: product.id, // productId is in the URL path already
       quantity: quantity.toString(),
-      configuration: JSON.stringify(serializableConfiguration), // Use the original full config state
+      configuration: JSON.stringify(serializableConfiguration), 
     }).toString();
     router.push(`/products/${product.id}/preview?${queryParams}`);
   };
@@ -274,12 +256,18 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                       <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
                       {val.imageUrl && (
                         <div className="relative w-24 h-16 rounded overflow-hidden">
-                          <Image src={val.imageUrl} alt={val.label} layout="fill" objectFit="cover" data-ai-hint={`${product.name.toLowerCase()} ${val.label.toLowerCase()}`}/>
+                          <Image 
+                            src={val.imageUrl} 
+                            alt={val.label} 
+                            layout="fill" 
+                            objectFit="cover" 
+                            data-ai-hint={`${product.id === 'garages' ? 'garage' : product.name.toLowerCase()} ${val.label.toLowerCase().replace(' ', '')}`}
+                          />
                         </div>
                       )}
                       <span className="text-sm text-center">{val.label}</span>
                       {val.priceModifier && product.id !== 'garages' && (
-                        <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}${val.priceModifier.toFixed(2)})</span>
+                        <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span>
                       )}
                     </Label>
                   ))}
@@ -350,4 +338,3 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     </Card>
   );
 }
-

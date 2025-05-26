@@ -46,23 +46,8 @@ export default function CheckoutPage() {
       if (paypalButtonContainer && window.paypal.Buttons) { 
         try {
           window.paypal.Buttons({
-            // This function is called when the user clicks the PayPal button.
-            // It's responsible for setting up the transaction details with PayPal.
-            // In a server-side integration, this would call your backend to create an order on PayPal.
             createOrder: async (data: any, actions: any) => {
               console.log("Attempting to create order with amount:", totalPrice.toFixed(2));
-              // Simulate calling your server to create a PayPal order
-              // Your server would then call PayPal's API and return an orderID
-              // For this example, we'll create the order directly on the client-side.
-              // In a real app, you might fetch an orderID from your server here:
-              // const orderID = await fetch('/api/paypal/create-order', {
-              //   method: 'POST',
-              //   headers: { 'Content-Type': 'application/json' },
-              //   body: JSON.stringify({ purchase_units: [{ amount: { value: totalPrice.toFixed(2), currency_code: 'GBP' } }] })
-              // }).then(res => res.json()).then(data => data.id);
-              // return orderID;
-              
-              // Client-side order creation (as before, for simplicity in this example)
               alert("SIMULATING: Contacting server to create PayPal order...");
               return actions.order.create({
                 purchase_units: [{
@@ -74,20 +59,8 @@ export default function CheckoutPage() {
                 }]
               });
             },
-            // This function is called after the user approves the payment on PayPal's site.
             onApprove: async (data: any, actions: any) => {
               console.log("Order approved by user:", data);
-              // Simulate calling your server to capture the PayPal order
-              
-              // For this example, we'll capture the order directly on the client-side.
-              // In a real app, you might send data.orderID to your server to finalize capture:
-              // await fetch('/api/paypal/capture-order', {
-              //   method: 'POST',
-              //   headers: { 'Content-Type': 'application/json' },
-              //   body: JSON.stringify({ orderID: data.orderID })
-              // });
-
-              // Client-side order capture (as before for simplicity)
               alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
               return actions.order.capture().then((details: any) => {
                 alert(`Transaction completed by ${details.payer.name.given_name}! Order ID: ${data.orderID}`);
@@ -116,7 +89,7 @@ export default function CheckoutPage() {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPayPalSdkReady, totalPrice, itemCount, cartItems, isClient]); // Added cartItems and isClient to dependencies
+  }, [isPayPalSdkReady, totalPrice, itemCount, cartItems, isClient]);
 
 
   if (!isClient) {
@@ -141,7 +114,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Script 
-        src="https://www.paypal.com/sdk/js?client-id=AVrdZkjO4CpPX8mNf7tEDUbhBekgtsR6SR-h8X5wne5uCZc2U5SCELJcrax-q_7Ld1rdi6261UfIA5z9&currency=GBP&components=buttons&enable-funding=paylater,card"
+        src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'AVrdZkjO4CpPX8mNf7tEDUbhBekgtsR6SR-h8X5wne5uCZc2U5SCELJcrax-q_7Ld1rdi6261UfIA5z9'}&currency=GBP&components=buttons&enable-funding=paylater,card`}
         strategy="afterInteractive"
         onLoad={() => {
           console.log("PayPal SDK loaded.");
@@ -149,7 +122,6 @@ export default function CheckoutPage() {
         }}
         onError={(e) => {
           console.error("PayPal SDK failed to load", e);
-          // Optionally, provide feedback to the user if the SDK fails to load
           const paypalButtonContainer = document.getElementById('paypal-button-container');
           if (paypalButtonContainer) {
             paypalButtonContainer.innerHTML = '<p class="text-destructive text-sm">Payment options failed to load. Please check your connection and try again.</p>';
@@ -162,7 +134,7 @@ export default function CheckoutPage() {
             <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
             <CardTitle className="text-3xl font-bold text-foreground">Checkout</CardTitle>
             <CardDescription className="text-muted-foreground pt-1">
-              You are about to pay <strong className="text-primary">{formatCurrency(totalPrice)}</strong> for {itemCount} item(s).
+              You are about to pay <strong className="text-foreground font-semibold">{formatCurrency(totalPrice)}</strong> for {itemCount} item(s).
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -172,15 +144,12 @@ export default function CheckoutPage() {
                 Choose your preferred payment method below. You can use your PayPal account,
                 Pay in 3 (if eligible), or pay with a credit/debit card.
               </p>
-              {/* Container for PayPal buttons */}
-              {isClient && totalPrice > 0 ? ( // Check isClient here as well
+              {isClient && totalPrice > 0 ? (
                 <div id="paypal-button-container" className="min-h-[100px] flex justify-center items-center">
-                  {/* PayPal buttons will render here. If SDK fails, error message might appear. */}
                    {!isPayPalSdkReady && <p className="text-muted-foreground">Loading payment options...</p>}
                 </div>
               ) : (
                 <div className="min-h-[100px] flex justify-center items-center text-muted-foreground">
-                 {/* This case might be hit if totalPrice is 0 or not client yet */}
                  <p>Preparing payment options...</p>
                 </div>
               )}

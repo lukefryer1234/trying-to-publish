@@ -77,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted sizes for square images
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2",
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" // Adjusted sizes for square images
+                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24"
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -362,7 +362,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const orderedOptions = [
         numBaysOption,
         beamSizeOption,
-        baySizeOption,
+        baySizeOption, // Width Per Bay
         trussTypeOption,
         catSlideOption,
     ].filter(Boolean) as ProductOption[];
@@ -422,7 +422,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
            {(product.id === 'garages') && (
              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
                <Link href="/">
-                 Back to Home
+                 Continue Shopping
                </Link>
              </Button>
            )}

@@ -48,10 +48,27 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
+  if (productId === 'garages') {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Configure Your {product.name}</h1>
+          {product.description && (
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              {product.description}
+            </p>
+          )}
+        </div>
+        <ProductConfigurationForm product={product} />
+      </div>
+    );
+  }
+
+  // Default layout for other products
   return (
     <div className="container mx-auto py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
-        <Card className="shadow-xl rounded-lg overflow-hidden">
+        <Card className="shadow-xl rounded-lg overflow-hidden sticky top-24">
           <CardHeader className="p-0">
             <div className="aspect-square relative w-full">
               <Image

@@ -30,6 +30,113 @@ interface ProductConfigurationFormProps {
   product: Product;
 }
 
+// Helper function to render a single option
+const renderOption = (
+  option: ProductOption, 
+  currentValue: string | number | boolean | undefined, 
+  handleOptionChange: (optionId: string, newValue: string | number | boolean) => void,
+  productName: string
+) => {
+  return (
+    <div key={option.id} className="text-center">
+      <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
+        {option.name}
+      </Label>
+      {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-3">{option.description}</p>}
+
+      {option.type === 'select' && option.values && (
+        <div className="mx-auto max-w-xs">
+          <Select
+            value={currentValue as string}
+            onValueChange={(value) => handleOptionChange(option.id, value)}
+          >
+            <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
+              <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {option.values.map(val => (
+                <SelectItem key={val.value} value={val.value}>
+                  {val.label} {val.priceModifier && productName !== 'Garages' ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {option.type === 'radio' && option.values && (
+        <RadioGroup
+          value={currentValue as string}
+          onValueChange={(value) => handleOptionChange(option.id, value)}
+          className="flex justify-center flex-wrap gap-4 pt-1"
+        >
+          {option.values.map(val => (
+            <Label 
+              key={val.value} 
+              htmlFor={`${option.id}-${val.value}`} 
+              className={cn(
+                `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
+                `w-40 h-40 p-3`, // Square dimensions
+                currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
+              )}
+            >
+              <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
+              {val.imageUrl && (
+                <div className={cn(
+                  "relative rounded overflow-hidden mb-1",
+                  "w-28 h-28" // Square image container
+                )}>
+                  <Image 
+                    src={val.imageUrl} 
+                    alt={val.label} 
+                    layout="fill" 
+                    objectFit="cover" 
+                    data-ai-hint={`${productName.toLowerCase().replace(' ', '')} ${val.label.toLowerCase().replace(' ', '')}`}
+                  />
+                </div>
+              )}
+              <span className="text-sm text-center block">{val.label}</span>
+                {val.priceModifier && productName !== 'Garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span> : ''}
+            </Label>
+          ))}
+        </RadioGroup>
+      )}
+
+      {option.type === 'slider' && (
+        <div className="space-y-2 pt-1 mx-auto max-w-xs">
+          <Slider
+            id={option.id}
+            min={option.min}
+            max={option.max}
+            step={option.step}
+            value={[currentValue as number]}
+            onValueChange={(newVal) => handleOptionChange(option.id, newVal[0])}
+            className="w-full"
+          />
+          <div className="text-center text-sm text-muted-foreground">
+            {currentValue as number} {option.unit || ''}
+          </div>
+        </div>
+      )}
+
+      {option.type === 'checkbox' && (
+        <div className="flex items-center justify-center space-x-2 pt-1">
+          <Checkbox
+            id={option.id}
+            checked={currentValue as boolean}
+            onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
+          />
+          <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
+            {option.checkboxLabel || 'Yes'}
+              {option.priceModifier && productName !== 'Garages' && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
+          </Label>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 export function ProductConfigurationForm({ product }: ProductConfigurationFormProps) {
   const router = useRouter();
   const { addToCart } = useCart();
@@ -231,101 +338,19 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
 
   if (isSpecialConfigLayout) { // Garages & Gazebos
+    const numBaysOption = product.options.find(opt => opt.id === 'numBays');
+    const baySizeOption = product.options.find(opt => opt.id === 'baySize');
+    const otherOptions = product.options.filter(opt => opt.id !== 'numBays' && opt.id !== 'baySize');
+    
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
-          {product.options.map(option => {
+          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name)}
+          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name)}
+          
+          {otherOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return (
-              <div key={option.id} className="text-center">
-                <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
-                  {option.name}
-                </Label>
-                {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-3">{option.description}</p>}
-
-                {option.type === 'select' && option.values && (
-                  <div className="mx-auto max-w-xs">
-                    <Select
-                      value={currentValue as string}
-                      onValueChange={(value) => handleOptionChange(option.id, value)}
-                    >
-                      <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
-                        <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {option.values.map(val => (
-                          <SelectItem key={val.value} value={val.value}>
-                            {val.label} {val.priceModifier && product.id !== 'garages' ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {option.type === 'radio' && option.values && (
-                  <RadioGroup
-                    value={currentValue as string}
-                    onValueChange={(value) => handleOptionChange(option.id, value)}
-                    className="flex justify-center flex-wrap gap-4 pt-1"
-                  >
-                    {option.values.map(val => (
-                      <Label 
-                        key={val.value} 
-                        htmlFor={`${option.id}-${val.value}`} 
-                        className={`flex flex-col items-center justify-center space-y-2 p-3 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all w-40 h-40 ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
-                      >
-                        <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
-                        {val.imageUrl && (
-                          <div className="relative w-28 h-28 rounded overflow-hidden mb-1">
-                            <Image 
-                              src={val.imageUrl} 
-                              alt={val.label} 
-                              layout="fill" 
-                              objectFit="cover" 
-                              data-ai-hint={`${product.name.toLowerCase().replace(' ', '')} ${val.label.toLowerCase().replace(' ', '')}`}
-                            />
-                          </div>
-                        )}
-                        <span className="text-sm text-center block">{val.label}</span>
-                         {val.priceModifier && product.id !== 'garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span> : ''}
-                      </Label>
-                    ))}
-                  </RadioGroup>
-                )}
-
-                {option.type === 'slider' && (
-                  <div className="space-y-2 pt-1 mx-auto max-w-xs">
-                    <Slider
-                      id={option.id}
-                      min={option.min}
-                      max={option.max}
-                      step={option.step}
-                      value={[currentValue as number]}
-                      onValueChange={(newVal) => handleOptionChange(option.id, newVal[0])}
-                      className="w-full"
-                    />
-                    <div className="text-center text-sm text-muted-foreground">
-                      {currentValue as number} {option.unit || ''}
-                    </div>
-                  </div>
-                )}
-
-                {option.type === 'checkbox' && (
-                  <div className="flex items-center justify-center space-x-2 pt-1">
-                    <Checkbox
-                      id={option.id}
-                      checked={currentValue as boolean}
-                      onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
-                    />
-                    <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
-                      {option.checkboxLabel || 'Yes'}
-                       {option.priceModifier && product.id !== 'garages' && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
-                    </Label>
-                  </div>
-                )}
-              </div>
-            )
+            return renderOption(option, currentValue, handleOptionChange, product.name);
           })}
           
            {(product.id === 'gazebos') && (
@@ -473,68 +498,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         <CardContent className="space-y-6 p-6 md:p-8">
           {product.options.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return (
-              <div key={option.id} className="text-center">
-                <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
-                  {option.name}
-                </Label>
-                {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-3">{option.description}</p>}
-
-                {option.type === 'select' && option.values && (
-                  <div className="mx-auto max-w-sm">
-                    <Select
-                      value={currentValue as string}
-                      onValueChange={(value) => handleOptionChange(option.id, value)}
-                    >
-                      <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
-                        <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {option.values.map(val => (
-                          <SelectItem key={val.value} value={val.value}>
-                            {val.label} {val.priceModifier ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {option.type === 'radio' && option.values && (
-                  <RadioGroup
-                    value={currentValue as string}
-                    onValueChange={(value) => handleOptionChange(option.id, value)}
-                    className="flex justify-center flex-row flex-wrap gap-4 pt-1"
-                  >
-                    {option.values.map(val => (
-                      <Label
-                        key={val.value}
-                        htmlFor={`${option.id}-${val.value}`}
-                        className={`flex items-center justify-center p-3 border-2 rounded-md hover:border-primary/70 cursor-pointer transition-all min-w-[120px] h-12 ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
-                      >
-                        <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
-                        <span className="text-sm text-center block">{val.label}</span>
-                        {/* Price modifier display can be added here if needed */}
-                      </Label>
-                    ))}
-                  </RadioGroup>
-                )}
-                
-                {option.type === 'checkbox' && (
-                  <div className="flex items-center justify-center space-x-2 pt-1">
-                    <Checkbox
-                      id={option.id}
-                      checked={currentValue as boolean}
-                      onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
-                    />
-                    <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
-                      {option.checkboxLabel || 'Yes'}
-                       {option.priceModifier && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
-                    </Label>
-                  </div>
-                )}
-              </div>
-            );
+            return renderOption(option, currentValue, handleOptionChange, product.name);
           })}
           <div className="text-center pt-2">
             <Label htmlFor="quantity-porches" className="text-md font-semibold text-foreground block mb-2">
@@ -558,7 +522,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
-          <Button onClick={handlePreview} size="lg" className="w-full sm:w-auto max-w-xs bg-amber-700 hover:bg-amber-800 text-white">
+          <Button onClick={handlePreview} size="lg" className="w-full sm:w-auto max-w-xs bg-primary hover:bg-primary/90 text-primary-foreground">
              Preview Purchase <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </CardFooter>
@@ -579,108 +543,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       <CardContent className="space-y-6">
         {product.options.map(option => {
           const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-          return (
-            <div key={option.id} className="space-y-3 border-b pb-4 last:border-b-0 last:pb-0">
-              <Label htmlFor={option.id} className="text-md font-medium text-foreground block">{option.name}</Label>
-              {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-2">{option.description}</p>}
-
-              {option.type === 'select' && option.values && (
-                <Select
-                  value={currentValue as string}
-                  onValueChange={(value) => handleOptionChange(option.id, value)}
-                >
-                  <SelectTrigger id={option.id} className="w-full bg-input/50">
-                    <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {option.values.map(val => (
-                      <SelectItem key={val.value} value={val.value}>
-                        {val.label} {val.priceModifier && product.id !== 'garages' ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-
-              {option.type === 'radio' && option.values && (
-                <RadioGroup
-                  value={currentValue as string}
-                  onValueChange={(value) => handleOptionChange(option.id, value)}
-                  className="flex flex-wrap gap-4 pt-1"
-                >
-                  {option.values.map(val => (
-                    <Label key={val.value} htmlFor={`${option.id}-${val.value}`} 
-                           className={`flex flex-col items-center space-y-2 p-4 border rounded-lg hover:border-primary cursor-pointer transition-all ${currentValue === val.value ? 'border-primary ring-2 ring-primary' : 'border-border'}`}
-                    >
-                      <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
-                      {val.imageUrl && (
-                        <div className="relative w-24 h-24 rounded overflow-hidden">
-                          <Image 
-                            src={val.imageUrl} 
-                            alt={val.label} 
-                            layout="fill" 
-                            objectFit="cover" 
-                            data-ai-hint={`${product.id === 'garages' || product.id === 'gazebos' ? product.name.toLowerCase().replace(' ','') : product.name.toLowerCase()} ${val.label.toLowerCase().replace(' ', '')}`}
-                          />
-                        </div>
-                      )}
-                      <span className="text-sm text-center">{val.label}</span>
-                      {val.priceModifier && product.id !== 'garages' && (
-                        <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span>
-                      )}
-                    </Label>
-                  ))}
-                </RadioGroup>
-              )}
-
-              {option.type === 'slider' && (
-                <div className="space-y-2 pt-1">
-                   <Slider
-                    id={option.id}
-                    min={option.min}
-                    max={option.max}
-                    step={option.step}
-                    value={[currentValue as number]}
-                    onValueChange={(newVal) => handleOptionChange(option.id, newVal[0])}
-                    className="w-full"
-                  />
-                  <div className="text-center text-sm text-muted-foreground">
-                    {currentValue as number} {option.unit || ''}
-                  </div>
-                </div>
-              )}
-               {option.type === 'number_input' && (
-                 <div className="space-y-2 pt-1">
-                    <Input
-                        id={option.id}
-                        type="number"
-                        value={currentValue as number}
-                        onChange={(e) => handleOptionChange(option.id, parseFloat(e.target.value) || 0)}
-                        min={option.min || 0}
-                        max={option.max || undefined}
-                        step={option.step || 1}
-                        className="w-full bg-input/50"
-                    />
-                     {option.unit && <div className="text-center text-sm text-muted-foreground">{currentValue as number} {option.unit}</div>}
-                 </div>
-                )}
-
-
-              {option.type === 'checkbox' && (
-                <div className="flex items-center space-x-2 pt-1">
-                  <Checkbox
-                    id={option.id}
-                    checked={currentValue as boolean}
-                    onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
-                  />
-                  <Label htmlFor={option.id} className="font-normal cursor-pointer">
-                    {option.checkboxLabel || 'Enable'}
-                    {option.priceModifier && product.id !== 'garages' && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
-                  </Label>
-                </div>
-              )}
-            </div>
-          )
+          return renderOption(option, currentValue, handleOptionChange, product.name);
         })}
         
         <div className="space-y-2 pt-4">

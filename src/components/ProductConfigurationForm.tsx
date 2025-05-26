@@ -24,6 +24,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { ShoppingCart, Eye, ArrowLeft, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface ProductConfigurationFormProps {
   product: Product;
@@ -231,7 +232,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   if (isSpecialConfigLayout) { // Garages & Gazebos
     return (
-      <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-lg">
+      <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
           {product.options.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;

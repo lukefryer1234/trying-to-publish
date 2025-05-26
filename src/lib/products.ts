@@ -122,30 +122,60 @@ export const mockProducts: Product[] = [
   {
     id: 'porches',
     name: 'Porches',
-    description: 'Add character to your home with a beautifully crafted oak porch.',
+    description: 'Design a welcoming entrance to your home with our customizable oak porches. Choose from various styles, sizes, and finishes to create the perfect addition to your property.',
     imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 2500,
+    basePrice: 2000, // Base for small, gabled, square, no infill, no glazing
     options: [
-       {
-        id: 'style',
-        name: 'Style',
+      {
+        id: 'porchSize',
+        name: 'Porch Size',
         type: 'select',
-        defaultValue: 'lean_to',
+        defaultValue: 'medium',
         values: [
-          { label: 'Lean-to', value: 'lean_to' },
-          { label: 'Gable End', value: 'gable_end', priceModifier: 400 },
+          { label: 'Small (1.5m x 1m)', value: 'small', priceModifier: 0 },
+          { label: 'Medium (2m x 1.5m)', value: 'medium', priceModifier: 250 },
+          { label: 'Large (2.5m x 1.5m)', value: 'large', priceModifier: 500 },
         ],
       },
       {
-        id: 'roofCovering',
-        name: 'Roof Covering',
+        id: 'roofStyle',
+        name: 'Roof Style',
         type: 'radio',
-        defaultValue: 'tiles_not_included',
+        defaultValue: 'gabled',
         values: [
-            {label: 'Tiles (Not Included)', value: 'tiles_not_included', priceModifier: 0},
-            {label: 'Oak Shingles', value: 'oak_shingles', priceModifier: 300},
-        ]
-      }
+          { label: 'Gabled', value: 'gabled', priceModifier: 0 },
+          { label: 'Hipped', value: 'hipped', priceModifier: 200 },
+        ],
+      },
+      {
+        id: 'legStyle',
+        name: 'Leg Style',
+        type: 'radio',
+        defaultValue: 'square',
+        values: [
+          { label: 'Square', value: 'square', priceModifier: 0 },
+          { label: 'Turned', value: 'turned', priceModifier: 150 },
+        ],
+      },
+      {
+        id: 'sideInfills',
+        name: 'Side Infills',
+        type: 'select',
+        defaultValue: 'none',
+        values: [
+          { label: 'None (Open Sides)', value: 'none', priceModifier: 0 },
+          { label: 'Half Height Solid Oak', value: 'half_solid', priceModifier: 400 },
+          { label: 'Full Height Solid Oak', value: 'full_solid', priceModifier: 700 },
+        ],
+      },
+      {
+        id: 'includeGlazing',
+        name: 'Include Glazing?',
+        type: 'checkbox',
+        checkboxLabel: 'Yes',
+        defaultValue: false,
+        priceModifier: 350, // Price added if glazing is true
+      },
     ],
   },
   {
@@ -153,7 +183,7 @@ export const mockProducts: Product[] = [
     name: 'Oak Beams',
     description: 'Structural and decorative oak beams, cut to your specifications.',
     imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 0, // Price calculated dynamically based on dimensions
+    basePrice: 1, // Nominal base, price calculated dynamically
     options: [
       {
         id: 'oakType',
@@ -162,16 +192,16 @@ export const mockProducts: Product[] = [
         defaultValue: 'green_oak',
         values: [
           { label: 'Green Oak', value: 'green_oak', priceModifier: 0 },
-          { label: 'Air Dried Oak', value: 'air_dried_oak', priceModifier: 20 }, // Example modifier
+          { label: 'Air Dried Oak', value: 'air_dried_oak', priceModifier: 20 }, 
         ],
       },
       {
         id: 'lengthCm',
         name: 'Length (cm)',
-        type: 'number_input', // Custom type to be handled by the form
+        type: 'number_input', 
         defaultValue: 200,
         unit: 'cm',
-        min: 50, // Example min/max
+        min: 50, 
         max: 1000,
         step: 1,
       },
@@ -195,7 +225,7 @@ export const mockProducts: Product[] = [
         max: 50,
         step: 1,
       },
-    ] as ProductOption[], // Asserting as ProductOption[] to satisfy stricter type checking if `type: 'number_input'` is not fully defined in base types.
+    ] as ProductOption[], 
   },
   {
     id: 'oak-flooring',

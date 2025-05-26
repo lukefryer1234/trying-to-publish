@@ -74,6 +74,27 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
+  // Centered layout for porches
+  if (productId === 'porches') {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{product.name}</h1>
+          {product.description && (
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
+              {product.description}
+            </p>
+          )}
+           <Button asChild size="lg" className="bg-amber-700 hover:bg-amber-800 text-white">
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </div>
+        <ProductConfigurationForm product={product} />
+      </div>
+    );
+  }
+
+
   // Centered layout for oak beams (form handles its own title)
   if (productId === 'oak-beams') {
     return (
@@ -114,3 +135,4 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
+

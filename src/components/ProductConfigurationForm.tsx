@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShoppingCart, Eye, ArrowLeft, Plus } from "lucide-react";
+import { ShoppingCart, Eye, ArrowLeft, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 
@@ -109,10 +109,8 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         const widthCm = getOptionValue('widthCm') as number || 0;
         const thicknessCm = getOptionValue('thicknessCm') as number || 0;
         
-        // Basic volumetric pricing: (L*W*T in cubic meters) * price per cubic meter
-        // Or a simpler factor if preferred. Example: 0.0008 per cm³ from image
         const volumeCm3 = lengthCm * widthCm * thicknessCm;
-        let price = volumeCm3 * 0.0008; // Example: $0.0008 per cm³
+        let price = volumeCm3 * 0.0008; 
 
         const oakTypeConfig = configuration.find(c => c.optionId === 'oakType');
         if (oakTypeConfig) {
@@ -154,6 +152,9 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           if (productOption?.type === 'checkbox') {
               return sum + (opt.value === true ? (productOption.priceModifier || 0) : 0);
           }
+          // For sliders and number_inputs, their values usually contribute to a more complex formula (handled above for oak-beams/flooring)
+          // or their price is included in basePrice or another option (e.g. garage bay slider controls quantity factored into other modifiers)
+          // So, typically, we don't add a simple priceModifier for them here unless it's a standalone cost.
           return sum + (productOption?.type !== 'slider' && productOption?.type !== 'number_input' ? (opt.priceModifier || 0) : 0); 
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
@@ -174,7 +175,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     if (!productOption) return;
 
     let newLabel = '';
-    let newPriceModifier = productOption.priceModifier || 0; // For number_input, base this on the option itself if needed
+    let newPriceModifier = productOption.priceModifier || 0; 
 
     if (productOption.type === 'select' || productOption.type === 'radio') {
       const valueObj = productOption.values?.find(v => v.value === (newValue as string));
@@ -185,13 +186,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     } else if (productOption.type === 'slider' || productOption.type === 'number_input') {
       const numericValue = Number(newValue);
       newLabel = `${numericValue} ${productOption.unit || ''}`.trim();
-      // For number_input, priceModifier is often part of a larger calculation, not directly summed per unit
-      // unless explicitly defined (e.g. price per cm).
-      // For oak beams, the priceModifier on the option object itself (like air_dried_oak) is used.
-      // Price for dimensions is handled in calculatePrice.
-      if (productOption.type === 'number_input' && productOption.id !== 'lengthCm' && productOption.id !== 'widthCm' && productOption.id !== 'thicknessCm') {
-        // Only apply direct priceModifier for non-dimension number_inputs if that's the design
-      }
     } else if (productOption.type === 'checkbox') {
       newLabel = newValue ? (productOption.checkboxLabel || 'Yes') : ('No');
       newPriceModifier = newValue ? (productOption.priceModifier || 0) : 0;
@@ -217,6 +211,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
   const handlePreview = () => {
     const serializableConfiguration = configuration.map(opt => ({
         ...opt,
+        // Ensure value is always a string for query params, especially booleans
         value: String(opt.value) 
     }));
 
@@ -231,9 +226,10 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   const isSpecialConfigLayout = product.id === 'garages' || product.id === 'gazebos';
   const isOakBeamsLayout = product.id === 'oak-beams';
+  const isPorchesLayout = product.id === 'porches';
 
 
-  if (isSpecialConfigLayout) {
+  if (isSpecialConfigLayout) { // Garages & Gazebos
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-lg">
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
@@ -276,8 +272,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                       <Label 
                         key={val.value} 
                         htmlFor={`${option.id}-${val.value}`} 
-                        className="flex flex-col items-center space-y-2 p-3 border-2 rounded-md hover:border-primary/70 cursor-pointer transition-all w-32 h-auto data-[state=checked]:border-primary data-[state=checked]:ring-2 data-[state=checked]:ring-primary/50"
-                        data-state={currentValue === val.value ? 'checked' : 'unchecked'}
+                        className={`flex flex-col items-center space-y-2 p-3 border-2 rounded-md hover:border-primary/70 cursor-pointer transition-all w-32 h-auto ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
                       >
                         <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
                         {val.imageUrl && (
@@ -292,7 +287,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                           </div>
                         )}
                         <span className="text-sm text-center block">{val.label}</span>
-                         {val.priceModifier && product.id !== 'garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}${val.priceModifier.toFixed(2)})</span> : ''}
+                         {val.priceModifier && product.id !== 'garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})</span> : ''}
                       </Label>
                     ))}
                   </RadioGroup>
@@ -468,7 +463,110 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     );
   }
 
-  // Default form for other products (e.g. Porches, Oak Flooring)
+  if (isPorchesLayout) {
+    return (
+      <Card className="w-full max-w-xl mx-auto shadow-xl rounded-lg">
+        <CardHeader className="text-center pb-4 bg-muted/30">
+          <CardTitle className="text-2xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6 p-6 md:p-8">
+          {product.options.map(option => {
+            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
+            return (
+              <div key={option.id} className="text-center">
+                <Label htmlFor={option.id} className="text-md font-semibold text-foreground block mb-3">
+                  {option.name}
+                </Label>
+                {option.description && <p className="text-sm text-muted-foreground -mt-2 mb-3">{option.description}</p>}
+
+                {option.type === 'select' && option.values && (
+                  <div className="mx-auto max-w-sm">
+                    <Select
+                      value={currentValue as string}
+                      onValueChange={(value) => handleOptionChange(option.id, value)}
+                    >
+                      <SelectTrigger id={option.id} className="w-full bg-input/50">
+                        <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {option.values.map(val => (
+                          <SelectItem key={val.value} value={val.value}>
+                            {val.label} {val.priceModifier ? `(${val.priceModifier > 0 ? '+' : ''}$${val.priceModifier.toFixed(2)})` : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {option.type === 'radio' && option.values && (
+                  <RadioGroup
+                    value={currentValue as string}
+                    onValueChange={(value) => handleOptionChange(option.id, value)}
+                    className="flex justify-center flex-row flex-wrap gap-4 pt-1"
+                  >
+                    {option.values.map(val => (
+                      <Label
+                        key={val.value}
+                        htmlFor={`${option.id}-${val.value}`}
+                        className={`flex items-center justify-center p-3 border-2 rounded-md hover:border-primary/70 cursor-pointer transition-all min-w-[120px] h-12 ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
+                      >
+                        <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
+                        <span className="text-sm text-center block">{val.label}</span>
+                        {/* Price modifier display can be added here if needed */}
+                      </Label>
+                    ))}
+                  </RadioGroup>
+                )}
+                
+                {option.type === 'checkbox' && (
+                  <div className="flex items-center justify-center space-x-2 pt-1">
+                    <Checkbox
+                      id={option.id}
+                      checked={currentValue as boolean}
+                      onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
+                    />
+                    <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
+                      {option.checkboxLabel || 'Yes'}
+                       {option.priceModifier && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
+                    </Label>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <div className="text-center pt-2">
+            <Label htmlFor="quantity-porches" className="text-md font-semibold text-foreground block mb-2">
+              Quantity
+            </Label>
+            <Input
+              id="quantity-porches"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+              min="1"
+              className="w-24 mx-auto bg-input/50"
+            />
+          </div>
+          <Separator className="my-4" />
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
+            <p className="text-3xl font-bold text-primary">
+              ${totalPrice.toFixed(2)}
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
+          <Button onClick={handlePreview} size="lg" className="w-full sm:w-auto max-w-xs bg-amber-700 hover:bg-amber-800 text-white">
+             Preview Purchase <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+
+  // Default form for other products (e.g. Oak Flooring)
   return (
     <Card className="w-full shadow-xl rounded-lg">
       <CardHeader>
@@ -510,8 +608,8 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                   className="flex flex-wrap gap-4 pt-1"
                 >
                   {option.values.map(val => (
-                    <Label key={val.value} htmlFor={`${option.id}-${val.value}`} className="flex flex-col items-center space-y-2 p-3 border rounded-md hover:border-primary cursor-pointer data-[state=checked]:border-primary data-[state=checked]:ring-2 data-[state=checked]:ring-primary transition-all"
-                      data-state={currentValue === val.value ? 'checked' : 'unchecked'}
+                    <Label key={val.value} htmlFor={`${option.id}-${val.value}`} 
+                           className={`flex flex-col items-center space-y-2 p-3 border rounded-md hover:border-primary cursor-pointer transition-all ${currentValue === val.value ? 'border-primary ring-2 ring-primary' : 'border-border'}`}
                     >
                       <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
                       {val.imageUrl && (
@@ -614,3 +712,4 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     </Card>
   );
 }
+

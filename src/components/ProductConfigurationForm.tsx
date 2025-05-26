@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShoppingCart, Eye, ArrowLeft, Plus, ArrowRight } from "lucide-react";
+import { ShoppingCart, Eye, ArrowLeft, Plus, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -35,12 +35,12 @@ const renderOption = (
   option: ProductOption,
   currentValue: string | number | boolean | undefined,
   handleOptionChange: (optionId: string, newValue: string | number | boolean) => void,
-  product: Product, // Changed from productName to product object
+  product: Product,
   isSpecialLayout: boolean // Determines centered styling for labels/controls
 ) => {
   const controlContainerClasses = isSpecialLayout ? "mx-auto max-w-xs" : "";
   const inputClasses = isSpecialLayout ? "bg-background/70" : "bg-input/50";
-  const productName = product.name; // Get productName from product object
+  const productName = product.name;
 
   return (
     <div key={option.id} className={cn(isSpecialLayout ? "text-center mb-8" : "mb-6")}>
@@ -81,7 +81,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`}
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2",
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted size for larger clickable area
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -89,7 +89,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20"
+                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20" // Adjusted image size
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')}-${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -385,14 +385,28 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             <Label htmlFor="quantity-oak-beams" className="text-md font-semibold text-foreground block mb-2">
               Quantity
             </Label>
-            <Input
-              id="quantity-oak-beams"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-              min="1"
-              className="w-24 mx-auto bg-input/50"
-            />
+            <div className="flex items-center justify-center space-x-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </Button>
+              <span className="w-10 text-center text-foreground font-medium tabular-nums text-lg">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                <ChevronUp className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
 
           <Separator className="my-4" />
@@ -430,14 +444,28 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             <Label htmlFor="quantity-porches" className="text-md font-semibold text-foreground block mb-2">
               Quantity
             </Label>
-            <Input
-              id="quantity-porches"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-              min="1"
-              className="w-24 mx-auto bg-input/50"
-            />
+            <div className="flex items-center justify-center space-x-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </Button>
+              <span className="w-10 text-center text-foreground font-medium tabular-nums text-lg">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                <ChevronUp className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
           <Separator className="my-4" />
           <div className="text-center">
@@ -455,49 +483,34 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       </Card>
     );
   }
-
-  // Default layout for Garages, Gazebos, Oak Flooring, and other generic products
-  // Uses centered options and specific card styling.
+  
   const orderedOptionsConfig = [
     { id: 'numBays', productIds: ['garages', 'gazebos'] },
     { id: 'beamSize', productIds: ['garages'] },
-    { id: 'baySize', productIds: ['garages', 'gazebos'] }, // Width Per Bay
+    { id: 'baySize', productIds: ['garages', 'gazebos'] }, 
     { id: 'trussType', productIds: ['garages', 'gazebos'] },
     { id: 'catSlide', productIds: ['garages'] },
-    // Gazebo specific options
     { id: 'legType', productIds: ['gazebos'] },
-    { id: 'sizeType', productIds: ['gazebos'] }, // This is width for Gazebos
+    { id: 'sizeType', productIds: ['gazebos'] }, 
   ];
 
   let orderedOptions: ProductOption[] = [];
   let remainingOptions: ProductOption[] = [...product.options];
 
-  if (isSpecialConfigLayout) { // This covers Garages and Gazebos
-    orderedOptionsConfig.forEach(config => {
-      if (config.productIds.includes(product.id)) {
-        const option = product.options.find(opt => opt.id === config.id);
+  if (isSpecialConfigLayout) { 
+    const desiredOrder = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide', 'legType', 'sizeType'];
+    
+    desiredOrder.forEach(optionId => {
+      const configEntry = orderedOptionsConfig.find(c => c.id === optionId);
+      if (configEntry && configEntry.productIds.includes(product.id)) {
+        const option = product.options.find(opt => opt.id === optionId);
         if (option) {
           orderedOptions.push(option);
-          remainingOptions = remainingOptions.filter(opt => opt.id !== config.id);
+          remainingOptions = remainingOptions.filter(opt => opt.id !== optionId);
         }
       }
     });
-    // Ensure specific order for garages
-    if (product.id === 'garages') {
-        orderedOptions.sort((a,b) => {
-            const order = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide'];
-            return order.indexOf(a.id) - order.indexOf(b.id);
-        });
-    }
-     // Ensure specific order for Gazebos (if different from garages)
-    if (product.id === 'gazebos') {
-        orderedOptions.sort((a,b) => {
-            const order = ['legType', 'sizeType', 'trussType']; // Example specific order for gazebos
-            return order.indexOf(a.id) - order.indexOf(b.id);
-        });
-    }
   } else {
-    // For other products that might fall into isSpecialConfigLayout but are not Garages/Gazebos (e.g. Oak Flooring)
     orderedOptions = [...product.options];
     remainingOptions = [];
   }
@@ -505,7 +518,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   return (
     <Card className={cn("w-full shadow-xl rounded-lg border-2 bg-secondary", (isSpecialConfigLayout) ? "max-w-2xl mx-auto" : "")}>
-      {isSpecialConfigLayout && product.id !== 'garages' && (
+      {(isSpecialConfigLayout && product.id !== 'garages') && (
         <CardHeader className="text-center">
           <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
         </CardHeader>
@@ -513,7 +526,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       <CardContent className={cn("space-y-8 pt-8 px-4 md:px-8", !isSpecialConfigLayout || product.id === 'garages' ? "pt-6" : "")}>
         {product.id === 'garages' && (
           <>
-            <h2 className="text-3xl font-bold text-foreground text-center mb-6">
+            <h2 className="text-3xl font-bold text-foreground text-center -mb-2">
               Configure Your New Garage
             </h2>
             <Separator className="my-6 bg-border/50" />
@@ -522,25 +535,39 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
         {orderedOptions.map(option => {
           const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-          return renderOption(option, currentValue, handleOptionChange, product, true); // true for isSpecialLayout
+          return renderOption(option, currentValue, handleOptionChange, product, true); 
         })}
         {remainingOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product, true); // true for isSpecialLayout
+            return renderOption(option, currentValue, handleOptionChange, product, true); 
         })}
 
         <div className="text-center pt-4">
           <Label htmlFor={`quantity-${product.id}`} className="text-md font-semibold text-foreground block mb-3">
             Quantity
           </Label>
-          <Input
-            id={`quantity-${product.id}`}
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-            min="1"
-            className="w-24 mx-auto bg-background/70"
-          />
+           <div className="flex items-center justify-center space-x-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </Button>
+              <span className="w-10 text-center text-foreground font-medium tabular-nums text-lg">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                <ChevronUp className="h-5 w-5" />
+              </Button>
+            </div>
         </div>
 
         <Separator className="my-6" />

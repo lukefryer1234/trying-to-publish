@@ -3,6 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { CreditCard, ShoppingCart, Lock } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
@@ -38,7 +39,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (isPayPalSdkReady && window.paypal && totalPrice > 0 && itemCount > 0 && isClient) {
       const paypalButtonContainer = document.getElementById('paypal-button-container');
-      // Clear previous buttons if any, to prevent duplicates on re-render
       if (paypalButtonContainer) {
         paypalButtonContainer.innerHTML = ''; 
       }
@@ -47,8 +47,10 @@ export default function CheckoutPage() {
         try {
           window.paypal.Buttons({
             createOrder: async (data: any, actions: any) => {
-              console.log("Attempting to create order with amount:", totalPrice.toFixed(2));
-              alert("SIMULATING: Contacting server to create PayPal order...");
+              // console.log("Attempting to create order with amount:", totalPrice.toFixed(2));
+              // alert("SIMULATING: Contacting server to create PayPal order...");
+              // In a real app, this would call your server to create an order with PayPal
+              // For client-side demo:
               return actions.order.create({
                 purchase_units: [{
                   amount: {
@@ -60,8 +62,10 @@ export default function CheckoutPage() {
               });
             },
             onApprove: async (data: any, actions: any) => {
-              console.log("Order approved by user:", data);
-              alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
+              // console.log("Order approved by user:", data);
+              // alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
+              // In a real app, this would call your server to capture the order
+              // For client-side demo:
               return actions.order.capture().then((details: any) => {
                 alert(`Transaction completed by ${details.payer.name.given_name}! Order ID: ${data.orderID}`);
                 // TODO: Redirect to an order confirmation page, clear cart, etc.
@@ -77,13 +81,13 @@ export default function CheckoutPage() {
           }).render('#paypal-button-container').catch((err: any) => {
             console.error("Failed to render PayPal buttons:", err);
             if (paypalButtonContainer) {
-                paypalButtonContainer.innerHTML = '<p class="text-destructive-foreground text-sm">Error loading PayPal buttons. Please try refreshing.</p>';
+                paypalButtonContainer.innerHTML = '<p class="text-destructive text-sm">Error loading PayPal buttons. Please try refreshing.</p>';
             }
           });
         } catch (error) {
             console.error("Error initializing PayPal Buttons:", error);
             if (paypalButtonContainer) {
-                paypalButtonContainer.innerHTML = '<p class="text-destructive-foreground text-sm">Could not initialize PayPal. Please try again later.</p>';
+                paypalButtonContainer.innerHTML = '<p class="text-destructive text-sm">Could not initialize PayPal. Please try again later.</p>';
             }
         }
       }
@@ -134,7 +138,7 @@ export default function CheckoutPage() {
             <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
             <CardTitle className="text-3xl font-bold text-foreground">Checkout</CardTitle>
             <CardDescription className="text-muted-foreground pt-1">
-              You are about to pay <strong className="text-foreground font-semibold">{formatCurrency(totalPrice)}</strong> for {itemCount} item(s).
+              Securely complete your purchase using PayPal.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -154,7 +158,21 @@ export default function CheckoutPage() {
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-center text-sm text-muted-foreground">
+
+            {isClient && totalPrice > 0 && (
+              <div className="pt-6 text-center">
+                <Separator className="my-4" />
+                <p className="text-sm uppercase text-muted-foreground tracking-wider">Order Total</p>
+                <p className="text-4xl font-bold text-foreground mt-1 mb-1">
+                  {formatCurrency(totalPrice)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  For {itemCount} item(s). Includes estimates for VAT & delivery.
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-center text-sm text-muted-foreground pt-4">
               <Lock className="h-4 w-4 mr-2" /> Secure Checkout via PayPal
             </div>
           </CardContent>
@@ -163,3 +181,4 @@ export default function CheckoutPage() {
     </>
   );
 }
+

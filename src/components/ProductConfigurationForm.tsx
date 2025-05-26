@@ -77,7 +77,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-32 h-auto p-2", 
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted default size back for non-special
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -85,7 +85,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-24 h-24" 
+                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20"  // Adjusted default size back
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')} ${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -358,23 +358,35 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     const trussTypeOption = product.options.find(opt => opt.id === 'trussType');
     const catSlideOption = product.options.find(opt => opt.id === 'catSlide');
     
-    const explicitlyHandledOptionIds = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide'];
+    // Explicitly define the order for these options
+    const orderedOptions = [
+        numBaysOption,
+        beamSizeOption,
+        baySizeOption,
+        trussTypeOption,
+        catSlideOption
+    ].filter(Boolean) as ProductOption[];
+
+
+    const explicitlyHandledOptionIds = orderedOptions.map(opt => opt.id);
     const otherOptions = product.options.filter(opt => !explicitlyHandledOptionIds.includes(opt.id));
     
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
           {product.id === 'garages' && (
-            <h2 className="text-3xl font-bold text-foreground text-center mb-6">
-              Configure Your New Garage
-            </h2>
+            <>
+              <h2 className="text-3xl font-bold text-foreground text-center mb-6">
+                Configure Your New Garage
+              </h2>
+              <Separator className="my-6 bg-border/50" />
+            </>
           )}
           
-          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name, true)}
-          {beamSizeOption && renderOption(beamSizeOption, getOptionValue(beamSizeOption.id), handleOptionChange, product.name, true)}
-          {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name, true)}
-          {trussTypeOption && renderOption(trussTypeOption, getOptionValue(trussTypeOption.id), handleOptionChange, product.name, true)}
-          {catSlideOption && renderOption(catSlideOption, getOptionValue(catSlideOption.id), handleOptionChange, product.name, true)}
+          {orderedOptions.map(option => {
+            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
+            return renderOption(option, currentValue, handleOptionChange, product.name, true);
+          })}
           
           {otherOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
@@ -402,7 +414,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
             <p className="text-3xl font-bold text-foreground mb-6">
-              ${totalPrice.toFixed(2)}
+              £{totalPrice.toFixed(2)}
             </p>
           </div>
         </CardContent>
@@ -463,7 +475,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Estimated Price for this Beam (excl. VAT & Delivery)</p>
             <p className="text-2xl font-bold text-foreground">
-              ${totalPrice.toFixed(2)}
+              £{totalPrice.toFixed(2)}
             </p>
           </div>
         </CardContent>
@@ -507,7 +519,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
             <p className="text-3xl font-bold text-primary">
-              ${totalPrice.toFixed(2)}
+              £{totalPrice.toFixed(2)}
             </p>
           </div>
         </CardContent>
@@ -549,7 +561,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         </div>
 
         <div className="text-2xl font-bold text-primary pt-6 border-t mt-6">
-          Total Price: ${totalPrice.toFixed(2)}
+          Total Price: £{totalPrice.toFixed(2)}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6">

@@ -28,6 +28,16 @@ export const mockProducts: Product[] = [
     basePrice: 8000, 
     options: [
       {
+        id: 'baySize',
+        name: 'Width Per Bay', // Changed from "Size Per Bay"
+        type: 'select',
+        defaultValue: 'standard',
+        values: [
+          { label: 'Standard (e.g., 3m wide)', value: 'standard' },
+          { label: 'Large (e.g., 3.5m wide)', value: 'large' },
+        ],
+      },
+      {
         id: 'numBays',
         name: 'Number of Bays',
         type: 'slider',
@@ -54,18 +64,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: 'curved',
         values: [
-          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75.png' },
-          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75.png' },
-        ],
-      },
-      {
-        id: 'baySize',
-        name: 'Size Per Bay',
-        type: 'select',
-        defaultValue: 'standard',
-        values: [
-          { label: 'Standard (e.g., 3m wide)', value: 'standard' },
-          { label: 'Large (e.g., 3.5m wide)', value: 'large' },
+          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75.png', priceModifier: 0 },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75.png', priceModifier: 0 },
         ],
       },
       {
@@ -97,8 +97,8 @@ export const mockProducts: Product[] = [
         ],
       },
       {
-        id: 'sizeType',
-        name: 'Size Type',
+        id: 'sizeType', // Consider renaming to widthType or similar if it's specifically width
+        name: 'Size Type', // This is for Gazebos, if it should also be 'Width Type' let me know
         type: 'select',
         defaultValue: '3mx3m',
         values: [
@@ -124,7 +124,7 @@ export const mockProducts: Product[] = [
     name: 'Porches',
     description: 'Design a welcoming entrance to your home with our customizable oak porches. Choose from various styles, sizes, and finishes to create the perfect addition to your property.',
     imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 2000, // Base for small, gabled, square, no infill, no glazing
+    basePrice: 2500, 
     options: [
       {
         id: 'porchSize',
@@ -143,8 +143,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: 'gabled',
         values: [
-          { label: 'Gabled', value: 'gabled', priceModifier: 0 },
-          { label: 'Hipped', value: 'hipped', priceModifier: 200 },
+          { label: 'Gabled', value: 'gabled', priceModifier: 0, imageUrl: 'https://placehold.co/150x100.png' },
+          { label: 'Hipped', value: 'hipped', priceModifier: 200, imageUrl: 'https://placehold.co/150x100.png' },
         ],
       },
       {
@@ -153,8 +153,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: 'square',
         values: [
-          { label: 'Square', value: 'square', priceModifier: 0 },
-          { label: 'Turned', value: 'turned', priceModifier: 150 },
+          { label: 'Square', value: 'square', priceModifier: 0, imageUrl: 'https://placehold.co/150x100.png' },
+          { label: 'Turned', value: 'turned', priceModifier: 150, imageUrl: 'https://placehold.co/150x100.png' },
         ],
       },
       {
@@ -174,7 +174,7 @@ export const mockProducts: Product[] = [
         type: 'checkbox',
         checkboxLabel: 'Yes',
         defaultValue: false,
-        priceModifier: 350, // Price added if glazing is true
+        priceModifier: 350, 
       },
     ],
   },
@@ -183,7 +183,7 @@ export const mockProducts: Product[] = [
     name: 'Oak Beams',
     description: 'Structural and decorative oak beams, cut to your specifications.',
     imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 1, // Nominal base, price calculated dynamically
+    basePrice: 0, 
     options: [
       {
         id: 'oakType',
@@ -260,8 +260,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: '150mm',
         values: [
-          { label: '150mm', value: '150mm' },
-          { label: '200mm', value: '200mm', priceModifier: 10 }, 
+          { label: '150mm', value: '150mm', imageUrl: 'https://placehold.co/150x100.png' },
+          { label: '200mm', value: '200mm', priceModifier: 10, imageUrl: 'https://placehold.co/150x100.png' }, 
         ],
       },
     ],

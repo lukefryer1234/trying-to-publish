@@ -138,11 +138,15 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         });
 
     } else { 
+      // Default pricing for gazebos, porches, etc.
       const optionsPrice = configuration.reduce((sum, opt) => {
-          if (product.options.find(po => po.id === opt.optionId)?.type === 'checkbox') {
-              return sum + (opt.value === true ? (product.options.find(po => po.id === opt.optionId)?.priceModifier || 0) : 0);
+          const productOption = product.options.find(po => po.id === opt.optionId);
+          if (productOption?.type === 'checkbox') {
+              return sum + (opt.value === true ? (productOption.priceModifier || 0) : 0);
           }
-          return sum + (opt.priceModifier || 0); 
+          // For select/radio, the priceModifier is already on the selected opt.
+          // For sliders in simple products, their own priceModifier isn't used directly in this sum, it's part of base if unit priced.
+          return sum + (productOption?.type !== 'slider' ? (opt.priceModifier || 0) : 0); 
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
     }
@@ -172,6 +176,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
       }
     } else if (productOption.type === 'slider') {
       newLabel = `${newValue} ${productOption.unit || ''}`.trim();
+      // For sliders, the priceModifier might be per unit, handled in calculatePrice
     } else if (productOption.type === 'checkbox') {
       newLabel = newValue ? (productOption.checkboxLabel || 'Yes') : ('No');
       newPriceModifier = newValue ? (productOption.priceModifier || 0) : 0;
@@ -209,9 +214,9 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   const totalPrice = currentPrice * quantity;
 
-  const isGarage = product.id === 'garages';
+  const isSpecialConfigLayout = product.id === 'garages' || product.id === 'gazebos';
 
-  if (isGarage) {
+  if (isSpecialConfigLayout) {
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-lg">
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
@@ -265,11 +270,12 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                               alt={val.label} 
                               layout="fill" 
                               objectFit="cover" 
-                              data-ai-hint={`${product.name.toLowerCase()} ${val.label.toLowerCase().replace(' ', '')}`}
+                              data-ai-hint={`${product.name.toLowerCase().replace(' ', '')} ${val.label.toLowerCase().replace(' ', '')}`}
                             />
                           </div>
                         )}
                         <span className="text-sm text-center block">{val.label}</span>
+                         {val.priceModifier && product.id !== 'garages' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}${val.priceModifier.toFixed(2)})</span> : ''}
                       </Label>
                     ))}
                   </RadioGroup>
@@ -301,6 +307,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                     />
                     <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
                       {option.checkboxLabel || 'Yes'}
+                       {option.priceModifier && product.id !== 'garages' && currentValue === true ? ` (+$${option.priceModifier.toFixed(2)})` : ''}
                     </Label>
                   </div>
                 )}
@@ -308,32 +315,40 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             )
           })}
           
-          <div className="pt-2"> {/* Quantity not shown in the image for garage, so hiding for now */}
-            {/* <Label htmlFor="quantity" className="text-md font-medium text-foreground">Quantity</Label>
-            <Input
-              id="quantity"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-              min="1"
-              className="w-24 bg-input/50"
-            /> */}
-          </div>
+           {/* Quantity Input for Gazebos, but not for Garages in this layout */}
+           {product.id === 'gazebos' && (
+            <div className="text-center pt-4">
+              <Label htmlFor="quantity-special" className="text-md font-semibold text-foreground block mb-3">
+                Quantity
+              </Label>
+              <Input
+                id="quantity-special"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                min="1"
+                className="w-24 mx-auto bg-input/50"
+              />
+            </div>
+          )}
+
 
           <Separator className="my-6" />
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
             <p className="text-3xl font-bold text-foreground mb-6">
-              ${totalPrice.toFixed(2)} {/* Assuming USD, adjust if needed */}
+              ${totalPrice.toFixed(2)}
             </p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
-          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-            <Link href="/">
-              Back to Home
-            </Link>
-          </Button>
+           {product.id === 'garages' && (
+             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+               <Link href="/">
+                 Back to Home
+               </Link>
+             </Button>
+           )}
           <Button onClick={handlePreview} size="lg" className="w-full sm:w-auto">
             <Eye className="mr-2 h-5 w-5" /> Preview Purchase
           </Button>
@@ -395,7 +410,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                             alt={val.label} 
                             layout="fill" 
                             objectFit="cover" 
-                            data-ai-hint={`${product.id === 'garages' ? 'garage' : product.name.toLowerCase()} ${val.label.toLowerCase().replace(' ', '')}`}
+                            data-ai-hint={`${product.id === 'garages' || product.id === 'gazebos' ? product.name.toLowerCase().replace(' ','') : product.name.toLowerCase()} ${val.label.toLowerCase().replace(' ', '')}`}
                           />
                         </div>
                       )}

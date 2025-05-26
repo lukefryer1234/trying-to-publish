@@ -57,7 +57,8 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
-  if (productId === 'garages') {
+  // Centered layout for garages and gazebos
+  if (productId === 'garages' || productId === 'gazebos') {
     return (
       <div className="container mx-auto py-8">
         <div className="text-center mb-6 md:mb-10">
@@ -73,7 +74,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     );
   }
 
-  // Default layout for other products
+  // Default layout for other products (image on left, form on right)
   return (
     <div className="container mx-auto py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -103,3 +104,4 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
+

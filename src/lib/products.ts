@@ -11,7 +11,7 @@ const defaultGaragePricingParams: GaragePricingParams = {
   },
   trussPrices: { // One-off cost for truss type
     "curved": 0,
-    "straight": 0, // Example: could be 100 if straight trusses are more expensive
+    "straight": 0, 
   },
   baySizeMultipliers: { // Overall price multiplier
     "standard": 1.0,
@@ -87,24 +87,34 @@ export const mockProducts: Product[] = [
     basePrice: 3000,
     options: [
       {
-        id: 'shape',
-        name: 'Shape',
+        id: 'legType',
+        name: 'Leg Type',
         type: 'select',
-        defaultValue: 'square',
+        defaultValue: 'full_height',
         values: [
-          { label: 'Square', value: 'square' },
-          { label: 'Hexagonal', value: 'hexagonal', priceModifier: 500 },
+          { label: 'Full Height Legs', value: 'full_height', priceModifier: 0 },
+          { label: 'Half Height Legs (for dwarf walls)', value: 'half_height', priceModifier: -100 },
         ],
       },
       {
-        id: 'siding',
-        name: 'Siding',
-        type: 'radio',
-        defaultValue: 'open',
+        id: 'sizeType',
+        name: 'Size Type',
+        type: 'select',
+        defaultValue: '3mx3m',
         values: [
-          { label: 'Open Sides', value: 'open' },
-          { label: 'Partial Sides', value: 'partial', priceModifier: 300 },
-          { label: 'Full Sides', value: 'full', priceModifier: 600 },
+          { label: '3m x 3m', value: '3mx3m', priceModifier: 0 },
+          { label: '4m x 3m', value: '4mx3m', priceModifier: 300 },
+          { label: '4m x 4m', value: '4mx4m', priceModifier: 500 },
+        ],
+      },
+      {
+        id: 'trussType',
+        name: 'Truss Type',
+        type: 'radio',
+        defaultValue: 'curved',
+        values: [
+          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/200x150.png', priceModifier: 50 },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/200x150.png', priceModifier: 0 },
         ],
       },
     ],
@@ -126,6 +136,16 @@ export const mockProducts: Product[] = [
           { label: 'Gable End', value: 'gable_end', priceModifier: 400 },
         ],
       },
+      {
+        id: 'roofCovering',
+        name: 'Roof Covering',
+        type: 'radio',
+        defaultValue: 'tiles_not_included',
+        values: [
+            {label: 'Tiles (Not Included)', value: 'tiles_not_included', priceModifier: 0},
+            {label: 'Oak Shingles', value: 'oak_shingles', priceModifier: 300},
+        ]
+      }
     ],
   },
   {
@@ -222,7 +242,7 @@ export const mockFeaturedDeals: Product[] = [
     id: 'pre-configured-double-garage',
     name: 'Pre-Configured Double Garage',
     description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery. Fixed configuration.',
-    imageUrl: 'https://placehold.co/200x150.png',
+    imageUrl: 'https://placehold.co/200x150.png', // data-ai-hint="double garage deal"
     basePrice: 10500, 
     options: [ 
       {
@@ -240,7 +260,7 @@ export const mockFeaturedDeals: Product[] = [
     id: 'garden-gazebo-kit',
     name: 'Garden Gazebo Kit (3m x 3m)',
     description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project. Includes all necessary timbers and basic plans.',
-    imageUrl: 'https://placehold.co/200x150.png',
+    imageUrl: 'https://placehold.co/200x150.png', // data-ai-hint="gazebo kit"
     basePrice: 2850, 
     options: [
       {
@@ -261,3 +281,4 @@ export const getProductById = (id: string): Product | undefined => {
   const allProducts = [...mockProducts, ...mockFeaturedDeals];
   return allProducts.find(p => p.id === id);
 };
+

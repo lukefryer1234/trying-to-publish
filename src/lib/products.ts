@@ -1,80 +1,206 @@
+
 import type { Product } from '@/types';
 
 export const mockProducts: Product[] = [
   {
-    id: 'custom-tshirt',
-    name: 'Custom T-Shirt',
-    description: 'Design your own unique t-shirt with custom text and graphics. High-quality cotton for maximum comfort.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 20,
+    id: 'garages',
+    name: 'Garages',
+    description: 'High-quality oak garages, built to last. Fully customizable options available.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 10000,
     options: [
       {
         id: 'size',
         name: 'Size',
         type: 'select',
-        defaultValue: 'M',
+        defaultValue: 'single',
         values: [
-          { label: 'Small', value: 'S' },
-          { label: 'Medium', value: 'M' },
-          { label: 'Large', value: 'L', priceModifier: 2 },
-          { label: 'X-Large', value: 'XL', priceModifier: 3 },
+          { label: 'Single Bay', value: 'single' },
+          { label: 'Double Bay', value: 'double', priceModifier: 5000 },
+          { label: 'Triple Bay', value: 'triple', priceModifier: 10000 },
         ],
       },
       {
-        id: 'color',
-        name: 'Color',
+        id: 'roof_type',
+        name: 'Roof Type',
         type: 'radio',
-        defaultValue: 'white',
+        defaultValue: 'tile',
         values: [
-          { label: 'White', value: 'white' },
-          { label: 'Black', value: 'black' },
-          { label: 'Rose', value: 'rose', priceModifier: 1 },
+          { label: 'Tile', value: 'tile' },
+          { label: 'Shingle', value: 'shingle', priceModifier: -500 },
         ],
       },
     ],
   },
   {
-    id: 'personalized-mug',
-    name: 'Personalized Mug',
-    description: 'Start your day right with a coffee mug personalized with your favorite photo or quote.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 15,
+    id: 'gazebos',
+    name: 'Gazebos',
+    description: 'Elegant oak gazebos to enhance your garden space. Perfect for outdoor relaxation.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 3000,
     options: [
       {
-        id: 'mug_type',
-        name: 'Mug Type',
+        id: 'shape',
+        name: 'Shape',
         type: 'select',
-        defaultValue: 'ceramic_white',
+        defaultValue: 'square',
         values: [
-          { label: 'Ceramic White (11oz)', value: 'ceramic_white' },
-          { label: 'Ceramic Black (11oz)', value: 'ceramic_black', priceModifier: 1 },
-          { label: 'Magic Mug (Color Changing)', value: 'magic_mug', priceModifier: 5 },
+          { label: 'Square', value: 'square' },
+          { label: 'Hexagonal', value: 'hexagonal', priceModifier: 500 },
+        ],
+      },
+      {
+        id: 'siding',
+        name: 'Siding',
+        type: 'radio',
+        defaultValue: 'open',
+        values: [
+          { label: 'Open Sides', value: 'open' },
+          { label: 'Partial Sides', value: 'partial', priceModifier: 300 },
+          { label: 'Full Sides', value: 'full', priceModifier: 600 },
         ],
       },
     ],
   },
   {
-    id: 'engraved-keychain',
-    name: 'Engraved Keychain',
-    description: 'Carry your keys in style with a custom engraved keychain. Perfect as a gift.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    basePrice: 10,
+    id: 'porches',
+    name: 'Porches',
+    description: 'Add character to your home with a beautifully crafted oak porch.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 2500,
+    options: [
+       {
+        id: 'style',
+        name: 'Style',
+        type: 'select',
+        defaultValue: 'lean_to',
+        values: [
+          { label: 'Lean-to', value: 'lean_to' },
+          { label: 'Gable End', value: 'gable_end', priceModifier: 400 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'oak-beams',
+    name: 'Oak Beams',
+    description: 'Structural and decorative oak beams, cut to your specifications.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 100, // Price per meter or unit
     options: [
       {
-        id: 'material',
-        name: 'Material',
-        type: 'radio',
-        defaultValue: 'stainless_steel',
+        id: 'length',
+        name: 'Length (meters)',
+        type: 'select',
+        defaultValue: '3',
         values: [
-          { label: 'Stainless Steel', value: 'stainless_steel' },
-          { label: 'Leather', value: 'leather', priceModifier: 2 },
-          { label: 'Wood', value: 'wood', priceModifier: 1 },
+          { label: '3m', value: '3' },
+          { label: '4m', value: '4', priceModifier: 30 },
+          { label: '5m', value: '5', priceModifier: 60 },
+        ],
+      },
+      {
+        id: 'finish',
+        name: 'Finish',
+        type: 'radio',
+        defaultValue: 'planed',
+        values: [
+          { label: 'Planed Smooth', value: 'planed' },
+          { label: 'Rough Sawn', value: 'rough_sawn', priceModifier: -10 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'oak-flooring',
+    name: 'Oak Flooring',
+    description: 'Durable and timeless solid oak flooring for a premium finish.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 50, // Price per sq meter
+    options: [
+      {
+        id: 'grade',
+        name: 'Grade',
+        type: 'select',
+        defaultValue: 'rustic',
+        values: [
+          { label: 'Rustic', value: 'rustic' },
+          { label: 'Prime', value: 'prime', priceModifier: 20 },
+        ],
+      },
+      {
+        id: 'width',
+        name: 'Board Width',
+        type: 'radio',
+        defaultValue: '150mm',
+        values: [
+          { label: '150mm', value: '150mm' },
+          { label: '200mm', value: '200mm', priceModifier: 10 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'special-deals',
+    name: 'Special Deals',
+    description: 'Check out our latest special offers and discounted oak products.',
+    imageUrl: 'https://placehold.co/400x300.png',
+    basePrice: 0, // Placeholder
+    options: [
+       {
+        id: 'offer',
+        name: 'Current Offers',
+        type: 'select',
+        defaultValue: 'none',
+        values: [
+          { label: 'View All Deals', value: 'all_deals' },
         ],
       },
     ],
   },
 ];
 
+export const mockFeaturedDeals: Product[] = [
+  {
+    id: 'pre-configured-double-garage',
+    name: 'Pre-Configured Double Garage',
+    description: 'Limited time offer on our popular 2-bay garage. Includes standard roofing and joinery.',
+    imageUrl: 'https://placehold.co/200x150.png',
+    basePrice: 8500,
+    options: [ // Simplified options for a pre-configured deal
+      {
+        id: 'roof_type',
+        name: 'Roof Type',
+        type: 'select',
+        defaultValue: 'tile_standard',
+        values: [
+          { label: 'Standard Tiles', value: 'tile_standard' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'garden-gazebo-kit',
+    name: 'Garden Gazebo Kit',
+    description: 'Easy-to-assemble 3m x 3m oak gazebo kit. Perfect DIY project.',
+    imageUrl: 'https://placehold.co/200x150.png',
+    basePrice: 3200,
+    options: [
+      {
+        id: 'kit_contents',
+        name: 'Kit Contents',
+        type: 'select',
+        defaultValue: 'full_kit',
+        values: [
+          { label: 'Full Kit', value: 'full_kit' },
+        ],
+      },
+    ],
+  },
+];
+
+
 export const getProductById = (id: string): Product | undefined => {
-  return mockProducts.find(p => p.id === id);
+  const allProducts = [...mockProducts, ...mockFeaturedDeals];
+  return allProducts.find(p => p.id === id);
 };

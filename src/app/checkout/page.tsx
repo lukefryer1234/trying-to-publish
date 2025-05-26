@@ -36,54 +36,83 @@ export default function CheckoutPage() {
   }, [isClient, getCartTotal, getItemCount]);
 
   useEffect(() => {
-    if (isPayPalSdkReady && window.paypal && totalPrice > 0 && itemCount > 0) {
+    if (isPayPalSdkReady && window.paypal && totalPrice > 0 && itemCount > 0 && isClient) {
       const paypalButtonContainer = document.getElementById('paypal-button-container');
-      if (paypalButtonContainer && paypalButtonContainer.children.length === 0) { // Render only if not already rendered
-        window.paypal.Buttons({
-          createOrder: (data: any, actions: any) => {
-            console.log("Creating order with amount:", totalPrice.toFixed(2));
-            return actions.order.create({
-              purchase_units: [{
-                amount: {
-                  value: totalPrice.toFixed(2), // PayPal expects a string for the value
-                  currency_code: 'GBP'
-                },
-                description: `Your order of ${itemCount} item(s) from SwiftCart.`,
-                // You can add a more detailed item_list here if needed:
-                // items: cartItems.map(item => ({
-                //   name: item.product.name,
-                //   quantity: item.quantity.toString(),
-                //   unit_amount: {
-                //     value: item.unitPrice.toFixed(2),
-                //     currency_code: 'GBP'
-                //   },
-                //   description: item.configuration.map(c => `${c.optionName}: ${c.label}`).join(', ')
-                // }))
-              }]
-            });
-          },
-          onApprove: (data: any, actions: any) => {
-            console.log("Order approved:", data);
-            // This function captures the funds from the transaction.
-            // In a real scenario, you would typically call your server to capture the payment.
-            return actions.order.capture().then((details: any) => {
-              // This function shows a transaction success message to your buyer.
-              alert(`Transaction completed by ${details.payer.name.given_name}! Order ID: ${data.orderID}`);
-              // TODO: Here you would typically redirect to an order confirmation page
-              // and potentially clear the cart.
-              // Example: router.push('/order-confirmation?orderId=' + data.orderID);
-            }).catch((err: any) => {
-              console.error("Payment capture failed:", err);
-              alert("Payment failed. Please try again.");
-            });
-          },
-          onError: (err: any) => {
-            console.error("PayPal Button Error:", err);
-            alert("An error occurred with the PayPal payment. Please try again.");
-          }
-        }).render('#paypal-button-container').catch((err: any) => {
-          console.error("Failed to render PayPal buttons:", err);
-        });
+      // Clear previous buttons if any, to prevent duplicates on re-render
+      if (paypalButtonContainer) {
+        paypalButtonContainer.innerHTML = ''; 
+      }
+
+      if (paypalButtonContainer && window.paypal.Buttons) { 
+        try {
+          window.paypal.Buttons({
+            // This function is called when the user clicks the PayPal button.
+            // It's responsible for setting up the transaction details with PayPal.
+            // In a server-side integration, this would call your backend to create an order on PayPal.
+            createOrder: async (data: any, actions: any) => {
+              console.log("Attempting to create order with amount:", totalPrice.toFixed(2));
+              // Simulate calling your server to create a PayPal order
+              // Your server would then call PayPal's API and return an orderID
+              alert("SIMULATING: Contacting server to create PayPal order...");
+              // For this example, we'll create the order directly on the client-side.
+              // In a real app, you might fetch an orderID from your server here:
+              // const orderID = await fetch('/api/paypal/create-order', {
+              //   method: 'POST',
+              //   headers: { 'Content-Type': 'application/json' },
+              //   body: JSON.stringify({ purchase_units: [{ amount: { value: totalPrice.toFixed(2), currency_code: 'GBP' } }] })
+              // }).then(res => res.json()).then(data => data.id);
+              // return orderID;
+              
+              // Client-side order creation (as before, for simplicity in this example)
+              return actions.order.create({
+                purchase_units: [{
+                  amount: {
+                    value: totalPrice.toFixed(2), 
+                    currency_code: 'GBP'
+                  },
+                  description: `Your order of ${itemCount} item(s) from SwiftCart.`,
+                }]
+              });
+            },
+            // This function is called after the user approves the payment on PayPal's site.
+            onApprove: async (data: any, actions: any) => {
+              console.log("Order approved by user:", data);
+              // Simulate calling your server to capture the PayPal order
+              alert(`SIMULATING: Contacting server to capture PayPal order ID: ${data.orderID}...`);
+              
+              // For this example, we'll capture the order directly on the client-side.
+              // In a real app, you might send data.orderID to your server to finalize capture:
+              // await fetch('/api/paypal/capture-order', {
+              //   method: 'POST',
+              //   headers: { 'Content-Type': 'application/json' },
+              //   body: JSON.stringify({ orderID: data.orderID })
+              // });
+
+              // Client-side order capture (as before for simplicity)
+              return actions.order.capture().then((details: any) => {
+                alert(`Transaction completed by ${details.payer.name.given_name}! Order ID: ${data.orderID}`);
+                // TODO: Redirect to an order confirmation page, clear cart, etc.
+              }).catch((err: any) => {
+                console.error("Payment capture failed:", err);
+                alert("Payment capture failed. Please try again.");
+              });
+            },
+            onError: (err: any) => {
+              console.error("PayPal Button Error:", err);
+              alert("An error occurred with the PayPal payment. Please try again or contact support.");
+            }
+          }).render('#paypal-button-container').catch((err: any) => {
+            console.error("Failed to render PayPal buttons:", err);
+            if (paypalButtonContainer) {
+                paypalButtonContainer.innerHTML = '<p class="text-destructive-foreground text-sm">Error loading PayPal buttons. Please try refreshing.</p>';
+            }
+          });
+        } catch (error) {
+            console.error("Error initializing PayPal Buttons:", error);
+            if (paypalButtonContainer) {
+                paypalButtonContainer.innerHTML = '<p class="text-destructive-foreground text-sm">Could not initialize PayPal. Please try again later.</p>';
+            }
+        }
       }
     }
   }, [isPayPalSdkReady, totalPrice, itemCount, cartItems, isClient]); // Added cartItems and isClient to dependencies
@@ -119,6 +148,11 @@ export default function CheckoutPage() {
         }}
         onError={(e) => {
           console.error("PayPal SDK failed to load", e);
+          // Optionally, provide feedback to the user if the SDK fails to load
+          const paypalButtonContainer = document.getElementById('paypal-button-container');
+          if (paypalButtonContainer) {
+            paypalButtonContainer.innerHTML = '<p class="text-destructive text-sm">Payment options failed to load. Please check your connection and try again.</p>';
+          }
         }}
       />
       <div className="container mx-auto py-12 flex flex-col items-center">
@@ -138,13 +172,15 @@ export default function CheckoutPage() {
                 Pay in 3 (if eligible), or pay with a credit/debit card.
               </p>
               {/* Container for PayPal buttons */}
-              {isPayPalSdkReady && totalPrice > 0 ? (
+              {isClient && totalPrice > 0 ? ( // Check isClient here as well
                 <div id="paypal-button-container" className="min-h-[100px] flex justify-center items-center">
-                  {/* PayPal buttons will render here */}
+                  {/* PayPal buttons will render here. If SDK fails, error message might appear. */}
+                   {!isPayPalSdkReady && <p className="text-muted-foreground">Loading payment options...</p>}
                 </div>
               ) : (
                 <div className="min-h-[100px] flex justify-center items-center text-muted-foreground">
-                  Loading payment options...
+                 {/* This case might be hit if totalPrice is 0 or not client yet */}
+                 <p>Preparing payment options...</p>
                 </div>
               )}
             </div>

@@ -63,11 +63,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
       <div className="container mx-auto py-8">
         <div className="text-center mb-6 md:mb-10">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Configure Your {product.name}</h1>
-          {product.description && (
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {product.description}
-            </p>
-          )}
+          {/* Product description removed from here to match cleaner layout */}
         </div>
         <ProductConfigurationForm product={product} />
       </div>
@@ -135,4 +131,3 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     </div>
   );
 }
-

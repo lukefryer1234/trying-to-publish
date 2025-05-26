@@ -248,7 +248,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                       value={currentValue as string}
                       onValueChange={(value) => handleOptionChange(option.id, value)}
                     >
-                      <SelectTrigger id={option.id} className="w-full bg-input/50">
+                      <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
                         <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
                       </SelectTrigger>
                       <SelectContent>
@@ -272,11 +272,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                       <Label 
                         key={val.value} 
                         htmlFor={`${option.id}-${val.value}`} 
-                        className={`flex flex-col items-center space-y-2 p-3 border-2 rounded-md hover:border-primary/70 cursor-pointer transition-all w-32 h-auto ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
+                        className={`flex flex-col items-center space-y-2 p-4 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all w-48 h-auto ${currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'}`}
                       >
                         <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
                         {val.imageUrl && (
-                          <div className="relative w-28 h-20 rounded overflow-hidden mb-1">
+                          <div className="relative w-42 h-30 rounded overflow-hidden mb-1">
                             <Image 
                               src={val.imageUrl} 
                               alt={val.label} 
@@ -387,7 +387,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                     value={currentValue as string}
                     onValueChange={(value) => handleOptionChange(option.id, value)}
                   >
-                    <SelectTrigger id={option.id} className="w-full bg-input/50">
+                    <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
                       <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
                     </SelectTrigger>
                     <SelectContent>
@@ -485,7 +485,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                       value={currentValue as string}
                       onValueChange={(value) => handleOptionChange(option.id, value)}
                     >
-                      <SelectTrigger id={option.id} className="w-full bg-input/50">
+                      <SelectTrigger id={option.id} className="w-full bg-input/50 text-center">
                         <SelectValue placeholder={`Select ${option.name.toLowerCase()}`} />
                       </SelectTrigger>
                       <SelectContent>
@@ -609,11 +609,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
                 >
                   {option.values.map(val => (
                     <Label key={val.value} htmlFor={`${option.id}-${val.value}`} 
-                           className={`flex flex-col items-center space-y-2 p-3 border rounded-md hover:border-primary cursor-pointer transition-all ${currentValue === val.value ? 'border-primary ring-2 ring-primary' : 'border-border'}`}
+                           className={`flex flex-col items-center space-y-2 p-4 border rounded-lg hover:border-primary cursor-pointer transition-all ${currentValue === val.value ? 'border-primary ring-2 ring-primary' : 'border-border'}`}
                     >
                       <RadioGroupItem value={val.value} id={`${option.id}-${val.value}`} className="sr-only" />
                       {val.imageUrl && (
-                        <div className="relative w-24 h-16 rounded overflow-hidden">
+                        <div className="relative w-36 h-24 rounded overflow-hidden">
                           <Image 
                             src={val.imageUrl} 
                             alt={val.label} 

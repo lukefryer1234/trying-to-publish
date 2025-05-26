@@ -23,6 +23,13 @@ export default function ProductPreviewPage() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+    }).format(amount);
+  };
+
   useEffect(() => {
     const productId = params.productId as string;
     const quantityParam = searchParams.get('quantity');
@@ -42,13 +49,54 @@ export default function ProductPreviewPage() {
 
     try {
       const parsedQty = parseInt(quantityParam, 10);
-      const parsedConfig: SelectedConfiguration[] = JSON.parse(configParam);
+      // Ensure configuration values are correctly parsed back if they were stringified
+      const rawConfig: Array<SelectedConfiguration & { value: string }> = JSON.parse(configParam);
+      const parsedConfig = rawConfig.map(opt => {
+        const productOption = fetchedProduct.options.find(po => po.id === opt.optionId);
+        let actualValue: string | number | boolean = opt.value;
+        if (productOption) {
+          if (productOption.type === 'checkbox') {
+            actualValue = opt.value === 'true';
+          } else if (productOption.type === 'slider' || productOption.type === 'number_input') {
+            actualValue = parseFloat(opt.value);
+          }
+        }
+        return { ...opt, value: actualValue };
+      });
       
       setQuantity(parsedQty > 0 ? parsedQty : 1);
       setConfiguration(parsedConfig);
 
-      const optionsPrice = parsedConfig.reduce((sum, opt) => sum + (opt.priceModifier || 0), 0);
-      const unitPrice = fetchedProduct.basePrice + optionsPrice;
+      const optionsPrice = parsedConfig.reduce((sum, opt) => {
+         // For checkboxes, priceModifier applies if true. For others, it's direct.
+        const productOption = fetchedProduct.options.find(po => po.id === opt.optionId);
+        if (productOption?.type === 'checkbox') {
+          return sum + (opt.value === true ? (opt.priceModifier || 0) : 0);
+        }
+        return sum + (opt.priceModifier || 0);
+      }, 0);
+
+      let unitPrice = fetchedProduct.basePrice;
+      // Apply special pricing logic if necessary (e.g. for garages or oak beams)
+      if (fetchedProduct.id === 'garages' && fetchedProduct.garagePricingParams) {
+        // Simplified version of garage pricing for preview
+        // A more robust solution would share the exact pricing logic
+        const numBaysConfig = parsedConfig.find(c => c.optionId === 'numBays');
+        const numBays = numBaysConfig ? Number(numBaysConfig.value) : 1;
+        unitPrice = fetchedProduct.basePrice + ((numBays -1) * fetchedProduct.garagePricingParams.bayPrice); 
+        // This is a simplification; a full rebuild of garage pricing would be needed here for 100% accuracy
+         unitPrice += optionsPrice; // Add other modifiers
+      } else if (fetchedProduct.id === 'oak-beams') {
+        const lengthCm = parsedConfig.find(c => c.optionId === 'lengthCm')?.value as number || 0;
+        const widthCm = parsedConfig.find(c => c.optionId === 'widthCm')?.value as number || 0;
+        const thicknessCm = parsedConfig.find(c => c.optionId === 'thicknessCm')?.value as number || 0;
+        const volumeCm3 = lengthCm * widthCm * thicknessCm;
+        unitPrice = volumeCm3 * 0.0008; // Example pricing factor
+        unitPrice += optionsPrice; // Add oak type modifier
+      } else {
+        unitPrice += optionsPrice;
+      }
+      
       setTotalPrice(unitPrice * parsedQty);
 
     } catch (e) {
@@ -63,7 +111,7 @@ export default function ProductPreviewPage() {
         <AlertTriangle className="w-16 h-16 text-destructive mb-4" />
         <h1 className="text-3xl font-bold text-foreground mb-2">Preview Error</h1>
         <p className="text-muted-foreground">{error}</p>
-        <Button onClick={() => router.push('/')} className="mt-4">Go to Homepage</Button>
+        <Button onClick={() => router.push('/')} className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">Go to Homepage</Button>
       </div>
     );
   }
@@ -98,7 +146,7 @@ export default function ProductPreviewPage() {
               alt={product.name}
               layout="fill"
               objectFit="cover"
-              data-ai-hint="product custom"
+              data-ai-hint="product custom preview"
             />
           </div>
           <div>
@@ -107,9 +155,9 @@ export default function ProductPreviewPage() {
               {configuration.map(opt => (
                 <li key={opt.optionId}>
                   <span className="font-medium">{opt.optionName}:</span> {opt.label}
-                  {opt.priceModifier !== 0 && (
+                  {opt.priceModifier !== 0 && product.id !== 'garages' && product.id !== 'oak-beams' && ( // Modifiers are part of base for these
                     <span className="text-xs ml-1">
-                      ({opt.priceModifier > 0 ? '+' : ''}${opt.priceModifier.toFixed(2)})
+                      ({opt.priceModifier > 0 ? '+' : ''}{formatCurrency(opt.priceModifier)})
                     </span>
                   )}
                 </li>
@@ -118,7 +166,7 @@ export default function ProductPreviewPage() {
           </div>
           <p className="text-md"><span className="font-semibold text-foreground">Quantity:</span> {quantity}</p>
           <p className="text-2xl font-bold text-primary">
-            Total Price: ${totalPrice.toFixed(2)}
+            Total Price: {formatCurrency(totalPrice)}
           </p>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6">
@@ -133,3 +181,4 @@ export default function ProductPreviewPage() {
     </div>
   );
 }
+

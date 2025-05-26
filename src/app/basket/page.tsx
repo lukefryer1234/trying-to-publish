@@ -17,10 +17,17 @@ export default function BasketPage() {
   const totalPrice = getCartTotal();
   const totalItems = getItemCount();
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+    }).format(amount);
+  };
+
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 text-center">Your Shopping Basket</h1>
-      <p className="text-sm text-muted-foreground mb-10 text-center">All prices are before VAT.</p>
+      <h2 className="text-xl text-muted-foreground mb-10 text-center">Items in Your Basket</h2>
       
       {cartItems.length === 0 ? (
         <div className="text-center py-12 border border-border rounded-lg shadow-sm bg-card max-w-lg mx-auto">
@@ -37,29 +44,31 @@ export default function BasketPage() {
         </div>
       ) : (
         <div className="w-full flex flex-col items-center">
-          {/* Items Table Section */}
-          <div className="w-full lg:w-5/6 xl:w-4/5 overflow-x-auto">
-            <table className="w-full text-sm min-w-[600px]">
+          <div className="w-full lg:w-5/6 xl:w-4/5 overflow-x-auto mb-8">
+            <table className="w-full text-sm min-w-[700px]">
               <thead className="border-b border-border">
                 <tr>
-                  <th scope="col" className="px-4 sm:px-6 py-4 font-semibold text-left text-muted-foreground uppercase text-xs tracking-wider">Product Details</th>
-                  <th scope="col" className="px-4 sm:px-6 py-4 text-center font-semibold text-muted-foreground uppercase text-xs tracking-wider">Quantity</th>
-                  <th scope="col" className="px-4 sm:px-6 py-4 text-right font-semibold text-muted-foreground uppercase text-xs tracking-wider">Unit Price</th>
-                  <th scope="col" className="px-4 sm:px-6 py-4 text-right font-semibold text-muted-foreground uppercase text-xs tracking-wider">Total</th>
-                  <th scope="col" className="px-4 sm:px-6 py-4 text-center font-semibold text-muted-foreground uppercase text-xs tracking-wider">Remove</th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 font-medium text-left text-muted-foreground uppercase text-xs tracking-wider">Product</th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 font-medium text-left text-muted-foreground uppercase text-xs tracking-wider">Description</th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-right font-medium text-muted-foreground uppercase text-xs tracking-wider">Price</th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-center font-medium text-muted-foreground uppercase text-xs tracking-wider">Quantity</th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-center font-medium text-muted-foreground uppercase text-xs tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {cartItems.map(item => (
-                  <tr key={item.cartItemId} className="hover:bg-muted/10 transition-colors duration-150">
+                  <tr key={item.cartItemId} className="hover:bg-muted/5 transition-colors duration-150">
+                    <td className="px-4 sm:px-6 py-4 align-top text-foreground font-medium">
+                      {item.product.name}
+                    </td>
                     <td className="px-4 sm:px-6 py-4 align-top">
-                      <div className="font-semibold text-foreground mb-1">{item.product.name}</div>
                       <ul className="text-xs text-muted-foreground space-y-0.5">
                         {item.configuration.map(opt => (
                           <li key={opt.optionId}><strong>{opt.optionName}:</strong> {opt.label}</li>
                         ))}
                       </ul>
                     </td>
+                    <td className="px-4 sm:px-6 py-4 text-right align-middle text-muted-foreground">{formatCurrency(item.unitPrice)}</td>
                     <td className="px-4 sm:px-6 py-4 align-middle">
                       <div className="flex items-center justify-center space-x-1">
                         <Button
@@ -72,7 +81,7 @@ export default function BasketPage() {
                         >
                           <ChevronDown className="h-4 w-4" />
                         </Button>
-                        <span className="w-8 text-center text-foreground font-medium">{item.quantity}</span>
+                        <span className="w-8 text-center text-foreground font-medium tabular-nums">{item.quantity}</span>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -83,10 +92,6 @@ export default function BasketPage() {
                           <ChevronUp className="h-4 w-4" />
                         </Button>
                       </div>
-                    </td>
-                    <td className="px-4 sm:px-6 py-4 text-right align-middle text-muted-foreground">${item.unitPrice.toFixed(2)}</td>
-                    <td className="px-4 sm:px-6 py-4 text-right align-middle font-semibold text-foreground">
-                      ${(item.unitPrice * item.quantity).toFixed(2)}
                     </td>
                     <td className="px-4 sm:px-6 py-4 text-center align-middle">
                       <Button
@@ -105,21 +110,19 @@ export default function BasketPage() {
             </table>
           </div>
 
-          {/* Simplified Order Summary & Actions */}
-          <div className="w-full lg:w-5/6 xl:w-4/5 mt-8 px-4 sm:px-0 flex flex-col md:flex-row justify-between items-start md:items-end">
-            <div className="mb-6 md:mb-0">
-              <span className="text-2xl font-bold text-foreground">Order Total: </span>
-              <span className="text-2xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
-               <p className="text-xs text-muted-foreground mt-1">Shipping calculated at checkout.</p>
+          <div className="w-full lg:w-5/6 xl:w-4/5 mt-4 px-4 sm:px-0">
+            <div className="text-left mb-6">
+              <p className="text-xl font-bold text-foreground">Total: {formatCurrency(totalPrice)}</p>
+              <p className="text-xs text-muted-foreground mt-1">(Excl. VAT & Delivery)</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:justify-end">
               <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
                 <Link href="/">
                   <ArrowRight className="mr-2 h-5 w-5 transform rotate-180" /> Continue Shopping
                 </Link>
               </Button>
-              <Button asChild size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="/checkout">
                   Proceed to Checkout <CreditCard className="ml-2 h-5 w-5" />
                 </Link>

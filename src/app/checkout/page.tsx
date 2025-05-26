@@ -6,12 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CreditCard, ShoppingCart, Lock } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
-import { useEffect, useState } from "react"; // Import useEffect and useState
+import { useEffect, useState } from "react"; 
 
 export default function CheckoutPage() {
-  const { getCartTotal, getItemCount, isClient } = useCart(); // Add isClient
+  const { getCartTotal, getItemCount, isClient } = useCart(); 
   const [totalPrice, setTotalPrice] = useState(0);
   const [itemCount, setItemCount] = useState(0);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+    }).format(amount);
+  };
 
   useEffect(() => {
     if (isClient) {
@@ -34,7 +41,7 @@ export default function CheckoutPage() {
         <p className="text-muted-foreground mb-8 max-w-md">
           You need to add items to your cart before proceeding to checkout.
         </p>
-        <Button asChild size="lg">
+        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Link href="/">Continue Shopping</Link>
         </Button>
       </div>
@@ -48,7 +55,7 @@ export default function CheckoutPage() {
           <CreditCard className="mx-auto h-12 w-12 text-primary mb-4" />
           <CardTitle className="text-3xl font-bold text-foreground">Checkout</CardTitle>
           <CardDescription className="text-muted-foreground pt-1">
-            You are about to pay <strong className="text-primary">${totalPrice.toFixed(2)}</strong> for {itemCount} item(s).
+            You are about to pay <strong className="text-primary">{formatCurrency(totalPrice)}</strong> for {itemCount} item(s).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

@@ -76,7 +76,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`} 
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                `w-40 h-40 p-3`, // Square dimensions
+                "w-40 h-40 p-3", // Square dimensions
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -345,8 +345,9 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     return (
       <Card className={cn("w-full max-w-2xl mx-auto shadow-xl rounded-lg", "bg-secondary")}>
         <CardContent className="space-y-8 pt-8 px-4 md:px-8">
-          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name)}
+          
           {baySizeOption && renderOption(baySizeOption, getOptionValue(baySizeOption.id), handleOptionChange, product.name)}
+          {numBaysOption && renderOption(numBaysOption, getOptionValue(numBaysOption.id), handleOptionChange, product.name)}
           
           {otherOptions.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;

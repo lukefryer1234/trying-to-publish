@@ -24,19 +24,9 @@ export const mockProducts: Product[] = [
     id: 'garages',
     name: 'Garages',
     description: 'High-quality oak garages, built to last. Fully customizable options available, from number of bays to truss types and beam sizes.',
-    imageUrl: 'https://placehold.co/600x400.png', 
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FGarages%2FWhatsApp%20Image%202025-04-11%20at%207.58.48%20PM%20(1).jpeg?alt=media&token=5394f0c7-1f89-429f-a53f-2e27018b455b',
     basePrice: 8000, 
     options: [
-      {
-        id: 'baySize',
-        name: 'Width Per Bay', // Changed from "Size Per Bay"
-        type: 'select',
-        defaultValue: 'standard',
-        values: [
-          { label: 'Standard (e.g., 3m wide)', value: 'standard' },
-          { label: 'Large (e.g., 3.5m wide)', value: 'large' },
-        ],
-      },
       {
         id: 'numBays',
         name: 'Number of Bays',
@@ -59,13 +49,23 @@ export const mockProducts: Product[] = [
         ],
       },
       {
+        id: 'baySize', // Changed from 'sizePerBay' to 'baySize' to match usage
+        name: 'Width Per Bay', 
+        type: 'select',
+        defaultValue: 'standard',
+        values: [
+          { label: 'Standard (e.g., 3m wide)', value: 'standard' },
+          { label: 'Large (e.g., 3.5m wide)', value: 'large' },
+        ],
+      },
+      {
         id: 'trussType',
         name: 'Truss Type',
         type: 'radio',
         defaultValue: 'curved',
         values: [
-          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/100x75.png', priceModifier: 0 },
-          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/100x75.png', priceModifier: 0 },
+          { label: 'Curved', value: 'curved', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/King%20truss.jpeg?alt=media&token=dd61eb30-4156-4585-b0b2-cbc2332da42c', priceModifier: 0 },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/King%20truss%202.jpeg?alt=media&token=6c2364e4-3ebe-4c4c-885d-24b9d60cadf2', priceModifier: 0 },
         ],
       },
       {
@@ -83,7 +83,7 @@ export const mockProducts: Product[] = [
     id: 'gazebos',
     name: 'Gazebos',
     description: 'Elegant oak gazebos to enhance your garden space. Perfect for outdoor relaxation.',
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FGazebo\'s%2FWhatsApp%20Image%202025-04-15%20at%209.57.50%20PM%20(5).jpeg?alt=media&token=ea0de540-3066-4629-98b8-a0184e992c8d',
     basePrice: 3000,
     options: [
       {
@@ -97,8 +97,8 @@ export const mockProducts: Product[] = [
         ],
       },
       {
-        id: 'sizeType', // Consider renaming to widthType or similar if it's specifically width
-        name: 'Size Type', // This is for Gazebos, if it should also be 'Width Type' let me know
+        id: 'sizeType', 
+        name: 'Size Type', 
         type: 'select',
         defaultValue: '3mx3m',
         values: [
@@ -113,8 +113,8 @@ export const mockProducts: Product[] = [
         type: 'radio',
         defaultValue: 'curved',
         values: [
-          { label: 'Curved', value: 'curved', imageUrl: 'https://placehold.co/200x150.png', priceModifier: 50 },
-          { label: 'Straight', value: 'straight', imageUrl: 'https://placehold.co/200x150.png', priceModifier: 0 },
+          { label: 'Curved', value: 'curved', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/King%20truss.jpeg?alt=media&token=dd61eb30-4156-4585-b0b2-cbc2332da42c', priceModifier: 50 },
+          { label: 'Straight', value: 'straight', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/King%20truss%202.jpeg?alt=media&token=6c2364e4-3ebe-4c4c-885d-24b9d60cadf2', priceModifier: 0 },
         ],
       },
     ],
@@ -123,7 +123,7 @@ export const mockProducts: Product[] = [
     id: 'porches',
     name: 'Porches',
     description: 'Design a welcoming entrance to your home with our customizable oak porches. Choose from various styles, sizes, and finishes to create the perfect addition to your property.',
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FPorches%2FWhatsApp%20Image%202025-04-16%20at%202.05.48%20PM%20(2).jpeg?alt=media&token=0dd459d1-9c1e-4065-bd0f-ea2c4fa0e8e6',
     basePrice: 2500, 
     options: [
       {
@@ -182,7 +182,7 @@ export const mockProducts: Product[] = [
     id: 'oak-beams',
     name: 'Oak Beams',
     description: 'Structural and decorative oak beams, cut to your specifications.',
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FBeams%2Freclaimedbeam.jpeg?alt=media&token=8f879894-7c21-490c-b3fd-9d60bed1201d',
     basePrice: 0, 
     options: [
       {
@@ -231,7 +231,7 @@ export const mockProducts: Product[] = [
     id: 'oak-flooring',
     name: 'Oak Flooring',
     description: 'Durable and timeless solid oak flooring for a premium finish.',
-    imageUrl: 'https://placehold.co/600x400.png',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FFlooring%2Fflooringreclaimed.jpeg?alt=media&token=ed10cf8e-ed84-41e1-a690-7719cb3b7dc2',
     basePrice: 50, 
     options: [
       {
@@ -269,14 +269,14 @@ export const mockProducts: Product[] = [
   {
     id: 'special-deals',
     name: 'Special Deals',
-    description: 'Check out our latest special offers and discounted oak products.',
+    description: 'Special offers and discounted oak products will be available soon!',
     imageUrl: 'https://placehold.co/600x400.png',
     basePrice: 0, 
     options: [ 
        {
         id: 'offer_info',
         name: 'Information',
-        type: 'select', 
+        type: 'select',
         defaultValue: 'view_deals',
         values: [
           { label: 'See active promotions below.', value: 'view_deals' },

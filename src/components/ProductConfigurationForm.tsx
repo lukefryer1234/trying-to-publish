@@ -42,9 +42,15 @@ const renderOption = (
   const inputClasses = isSpecialLayout ? "bg-background/70" : "bg-input/50";
   const productName = product.name;
 
+  const labelSizeClass = isSpecialLayout ? "text-lg" : "text-md";
+  const radioLabelSizeClass = isSpecialLayout ? "text-base" : "text-sm";
+  const sliderValueSizeClass = isSpecialLayout ? "text-base" : "text-sm";
+  const checkboxLabelSizeClass = isSpecialLayout ? "text-base" : "text-sm";
+
+
   return (
     <div key={option.id} className={cn(isSpecialLayout ? "text-center mb-8" : "mb-6")}>
-      <Label htmlFor={option.id} className={cn("text-md font-semibold text-foreground block mb-3", isSpecialLayout ? "" : "text-left")}>
+      <Label htmlFor={option.id} className={cn(`font-semibold text-foreground block mb-3 ${labelSizeClass}`, isSpecialLayout ? "" : "text-left")}>
         {option.name}
       </Label>
       {option.description && <p className={cn("text-sm text-muted-foreground -mt-2 mb-3", isSpecialLayout ? "" : "text-left")}>{option.description}</p>}
@@ -81,7 +87,7 @@ const renderOption = (
               htmlFor={`${option.id}-${val.value}`}
               className={cn(
                 `flex flex-col items-center justify-center space-y-2 border-2 rounded-lg hover:border-primary/70 cursor-pointer transition-all`,
-                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", // Adjusted size for larger clickable area
+                isSpecialLayout ? "w-40 h-40 p-3" : "w-24 h-24 p-2", 
                 currentValue === val.value ? 'border-primary ring-2 ring-primary/50' : 'border-border'
               )}
             >
@@ -89,7 +95,7 @@ const renderOption = (
               {val.imageUrl && (
                 <div className={cn(
                   "relative rounded overflow-hidden mb-1",
-                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20" // Adjusted image size
+                   isSpecialLayout ? "w-28 h-28" : "w-20 h-20" 
                 )}
                 data-ai-hint={`${productName.toLowerCase().replace(/\s+/g, '-')}-${val.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -101,7 +107,7 @@ const renderOption = (
                   />
                 </div>
               )}
-              <span className="text-sm text-center block">{val.label}</span>
+              <span className={`text-center block ${radioLabelSizeClass}`}>{val.label}</span>
                 {val.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})</span> : ''}
             </Label>
           ))}
@@ -119,7 +125,7 @@ const renderOption = (
             onValueChange={(newVal) => handleOptionChange(option.id, newVal[0])}
             className="w-full"
           />
-          <div className={cn("text-sm text-muted-foreground", isSpecialLayout ? "text-center" : "text-left")}>
+          <div className={cn(`text-muted-foreground ${sliderValueSizeClass}`, isSpecialLayout ? "text-center" : "text-left")}>
             {currentValue as number} {option.unit || ''}
           </div>
         </div>
@@ -148,7 +154,7 @@ const renderOption = (
             checked={currentValue as boolean}
             onCheckedChange={(checked) => handleOptionChange(option.id, !!checked)}
           />
-          <Label htmlFor={option.id} className="font-normal cursor-pointer text-sm">
+          <Label htmlFor={option.id} className={`font-normal cursor-pointer ${checkboxLabelSizeClass}`}>
             {option.checkboxLabel || 'Yes'}
               {option.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' && currentValue === true ? ` (+£${option.priceModifier.toFixed(2)})` : ''}
           </Label>
@@ -240,11 +246,12 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
         const thicknessCm = getOptionValue('thicknessCm') as number || 0;
 
         const volumeCm3 = lengthCm * widthCm * thicknessCm;
-        let price = volumeCm3 * 0.0008;
+        let price = volumeCm3 * 0.0008; // Example pricing factor, ensure this makes sense
 
         const oakTypeConfig = configuration.find(c => c.optionId === 'oakType');
         if (oakTypeConfig) {
-            price += oakTypeConfig.priceModifier || 0;
+            const selectedOakType = product.options.find(o => o.id === 'oakType')?.values?.find(v => v.value === oakTypeConfig.value);
+            price += selectedOakType?.priceModifier || 0;
         }
         calculatedTotal = price;
 
@@ -259,16 +266,17 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
         configuration.forEach(opt => {
             const productOption = product.options.find(po => po.id === opt.optionId);
-            if (productOption && productOption.type !== 'slider') {
+            if (productOption && productOption.type !== 'slider' && productOption.id !== 'area') { // Exclude 'area' from modifier calculation here
                  if (productOption.type === 'checkbox' && opt.value === true) {
                     calculatedTotal += productOption.priceModifier || 0;
                  } else if (productOption.type !== 'checkbox') {
                     const selectedValueObj = productOption.values?.find(v => v.value === opt.value);
                     if (selectedValueObj) {
-                        if (product.id === 'oak-flooring') {
-                            calculatedTotal += (selectedValueObj.priceModifier || 0) * areaOrLength;
+                         // For flooring, some modifiers might be per sq meter
+                        if (product.id === 'oak-flooring' && (productOption.id === 'grade' || productOption.id === 'width')) {
+                           calculatedTotal += (selectedValueObj.priceModifier || 0) * areaOrLength;
                         } else {
-                             calculatedTotal += selectedValueObj.priceModifier || 0;
+                           calculatedTotal += selectedValueObj.priceModifier || 0;
                         }
                     }
                  }
@@ -282,6 +290,8 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           if (productOption?.type === 'checkbox') {
               return sum + (opt.value === true ? (productOption.priceModifier || 0) : 0);
           }
+          // For other types (select, radio), directly use the priceModifier from the selected option's value
+          // This assumes opt.priceModifier is correctly set when the option changes.
           return sum + (productOption?.type !== 'slider' && productOption?.type !== 'number_input' ? (opt.priceModifier || 0) : 0);
       }, 0);
       calculatedTotal = product.basePrice + optionsPrice;
@@ -302,7 +312,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     if (!productOption) return;
 
     let newLabel = '';
-    let newPriceModifier = productOption.priceModifier || 0;
+    let newPriceModifier = 0; // Default to 0
 
     if (productOption.type === 'select' || productOption.type === 'radio') {
       const valueObj = productOption.values?.find(v => v.value === (newValue as string));
@@ -313,6 +323,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     } else if (productOption.type === 'slider' || productOption.type === 'number_input') {
       const numericValue = Number(newValue);
       newLabel = `${numericValue} ${productOption.unit || ''}`.trim();
+      // Sliders/number inputs don't typically have their own priceModifier in this model; they affect base price calculation
     } else if (productOption.type === 'checkbox') {
       newLabel = newValue ? (productOption.checkboxLabel || 'Yes') : ('No');
       newPriceModifier = newValue ? (productOption.priceModifier || 0) : 0;
@@ -332,13 +343,14 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     toast({
       title: message || "Added to Cart!",
       description: `${product.name} (x${quantity}) has been added to your basket.`,
+      duration: 3000,
     });
   };
 
   const handlePreview = () => {
     const serializableConfiguration = configuration.map(opt => ({
         ...opt,
-        value: String(opt.value)
+        value: String(opt.value) 
     }));
 
     const queryParams = new URLSearchParams({
@@ -353,8 +365,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   const isOakBeamsLayout = product.id === 'oak-beams';
   const isPorchesLayout = product.id === 'porches';
-
-  // Determine if special centered layout should be used (Garages, Gazebos, Oak Flooring, etc.)
   const isSpecialConfigLayout = !isOakBeamsLayout && !isPorchesLayout;
 
 
@@ -382,7 +392,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           </div>
 
           <div className="text-center pt-2">
-            <Label htmlFor="quantity-oak-beams" className="text-md font-semibold text-foreground block mb-2">
+            <Label htmlFor="quantity-oak-beams" className="text-lg font-semibold text-foreground block mb-2">
               Quantity
             </Label>
             <div className="flex items-center justify-center space-x-1">
@@ -411,10 +421,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
           <Separator className="my-4" />
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-1">Estimated Price for this Beam (excl. VAT & Delivery)</p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-lg font-semibold text-foreground mb-1">Price</p>
+             <p className="text-4xl font-bold text-primary mb-1">
               {formattedTotalPrice}
             </p>
+            <p className="text-xs text-muted-foreground">(excl. VAT & Delivery)</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 pt-6 pb-8">
@@ -433,15 +444,15 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     return (
       <Card className="w-full max-w-xl mx-auto shadow-xl rounded-lg">
         <CardHeader className="text-center pb-4 bg-muted/30">
-          <CardTitle className="text-2xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
+          <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 p-6 md:p-8">
           {product.options.map(option => {
             const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product, false);
+            return renderOption(option, currentValue, handleOptionChange, product, true); // Changed to true for centered options
           })}
           <div className="text-center pt-2">
-            <Label htmlFor="quantity-porches" className="text-md font-semibold text-foreground block mb-2">
+            <Label htmlFor="quantity-porches" className="text-lg font-semibold text-foreground block mb-2">
               Quantity
             </Label>
             <div className="flex items-center justify-center space-x-1">
@@ -469,10 +480,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           </div>
           <Separator className="my-4" />
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
-            <p className="text-3xl font-bold text-primary">
+            <p className="text-lg font-semibold text-foreground mb-1">Price</p>
+            <p className="text-4xl font-bold text-primary mb-1">
               {formattedTotalPrice}
             </p>
+             <p className="text-xs text-muted-foreground">(excl. VAT & Delivery)</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-2 pb-8">
@@ -484,6 +496,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     );
   }
   
+  // Default layout for Garages, Gazebos, Oak Flooring etc.
   const orderedOptionsConfig = [
     { id: 'numBays', productIds: ['garages', 'gazebos'] },
     { id: 'beamSize', productIds: ['garages'] },
@@ -492,41 +505,47 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     { id: 'catSlide', productIds: ['garages'] },
     { id: 'legType', productIds: ['gazebos'] },
     { id: 'sizeType', productIds: ['gazebos'] }, 
+    { id: 'area', productIds: ['oak-flooring']},
+    { id: 'grade', productIds: ['oak-flooring']},
+    { id: 'width', productIds: ['oak-flooring']},
   ];
 
   let orderedOptions: ProductOption[] = [];
   let remainingOptions: ProductOption[] = [...product.options];
+  
+  const desiredOrderForProduct = orderedOptionsConfig
+    .filter(c => c.productIds.includes(product.id))
+    .map(c => c.id);
 
   if (isSpecialConfigLayout) { 
-    const desiredOrder = ['numBays', 'beamSize', 'baySize', 'trussType', 'catSlide', 'legType', 'sizeType'];
-    
-    desiredOrder.forEach(optionId => {
-      const configEntry = orderedOptionsConfig.find(c => c.id === optionId);
-      if (configEntry && configEntry.productIds.includes(product.id)) {
-        const option = product.options.find(opt => opt.id === optionId);
-        if (option) {
-          orderedOptions.push(option);
-          remainingOptions = remainingOptions.filter(opt => opt.id !== optionId);
-        }
+    desiredOrderForProduct.forEach(optionId => {
+      const option = product.options.find(opt => opt.id === optionId);
+      if (option) {
+        orderedOptions.push(option);
+        remainingOptions = remainingOptions.filter(opt => opt.id !== optionId);
       }
     });
-  } else {
+    // Add any remaining options not in desiredOrder to the end
+    orderedOptions = [...orderedOptions, ...remainingOptions];
+  } else { // For non-special layouts, just use the default order
     orderedOptions = [...product.options];
     remainingOptions = [];
   }
 
 
   return (
-    <Card className={cn("w-full shadow-xl rounded-lg border-2 bg-secondary", (isSpecialConfigLayout) ? "max-w-2xl mx-auto" : "")}>
+    <Card className={cn("w-full shadow-xl rounded-lg border-2 bg-secondary", (isSpecialConfigLayout) ? "max-w-2xl mx-auto" : "md:max-w-md lg:max-w-lg")}>
       {(isSpecialConfigLayout && product.id !== 'garages') && (
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
+          <CardTitle className={cn("text-2xl md:text-3xl font-bold text-foreground", product.id === 'gazebos' ? 'pt-0' : '')}>
+            {product.id === 'gazebos' ? "Configure Your Gazebo" : `Configure Your ${product.name}`}
+          </CardTitle>
         </CardHeader>
       )}
-      <CardContent className={cn("space-y-8 pt-8 px-4 md:px-8", !isSpecialConfigLayout || product.id === 'garages' ? "pt-6" : "")}>
+      <CardContent className={cn("space-y-8 px-4 md:px-8", (product.id === 'garages' || (isSpecialConfigLayout && product.id !== 'garages')) ? "pt-6" : "pt-6")}>
         {product.id === 'garages' && (
           <>
-            <h2 className="text-3xl font-bold text-foreground text-center -mb-2">
+            <h2 className="text-3xl font-bold text-foreground text-center mb-6">
               Configure Your New Garage
             </h2>
             <Separator className="my-6 bg-border/50" />
@@ -537,13 +556,9 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           const currentValue = configuration.find(c => c.optionId === option.id)?.value;
           return renderOption(option, currentValue, handleOptionChange, product, true); 
         })}
-        {remainingOptions.map(option => {
-            const currentValue = configuration.find(c => c.optionId === option.id)?.value;
-            return renderOption(option, currentValue, handleOptionChange, product, true); 
-        })}
-
+        
         <div className="text-center pt-4">
-          <Label htmlFor={`quantity-${product.id}`} className="text-md font-semibold text-foreground block mb-3">
+          <Label htmlFor={`quantity-${product.id}`} className="text-lg font-semibold text-foreground block mb-3">
             Quantity
           </Label>
            <div className="flex items-center justify-center space-x-1">
@@ -572,10 +587,11 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
         <Separator className="my-6" />
         <div className="text-center">
-          <p className="text-sm text-muted-foreground mb-1">Estimated Price (excl. VAT & Delivery)</p>
-          <p className="text-3xl font-bold text-foreground mb-6">
-            {formattedTotalPrice}
-          </p>
+            <p className="text-lg font-semibold text-foreground mb-1">Price</p>
+            <p className="text-4xl font-bold text-primary mb-1">
+              {formattedTotalPrice}
+            </p>
+            <p className="text-xs text-muted-foreground">(excl. VAT & Delivery)</p>
         </div>
       </CardContent>
       <CardFooter className="pt-2 pb-8 px-4 md:px-8">
@@ -603,7 +619,6 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             </Button>
           </div>
         ) : (
-          // Buttons for Oak Flooring and other generic products (now using isSpecialConfigLayout)
           <div className="w-full flex flex-col sm:flex-row gap-3 pt-6 justify-center">
              <Button onClick={() => router.back()} variant="outline" size="lg" className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-5 w-5" /> Back

@@ -1,11 +1,11 @@
 
 import { ProductCard } from '@/components/ProductCard';
-import { FeaturedDealCard } from '@/components/FeaturedDealCard';
-import { mockProducts, mockFeaturedDeals } from '@/lib/products';
+// import { FeaturedDealCard } from '@/components/FeaturedDealCard'; // Removed as section is removed
+import { mockProducts } from '@/lib/products';
 
 export default function HomePage() {
   const products = mockProducts;
-  const featuredDeals = mockFeaturedDeals;
+  // const featuredDeals = mockFeaturedDeals; // Removed as section is removed
 
   return (
     <div className="space-y-12 md:space-y-16 py-8">
@@ -21,6 +21,7 @@ export default function HomePage() {
         <p className="text-center text-muted-foreground">No products available at the moment. Please check back later.</p>
       )}
 
+      {/* Featured Deals section removed
       {featuredDeals.length > 0 && (
         <section>
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-8 text-center">
@@ -33,6 +34,7 @@ export default function HomePage() {
           </div>
         </section>
       )}
+      */}
     </div>
   );
 }

@@ -71,7 +71,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
     return (
       <div className="container mx-auto py-8">
         <div className="text-center mb-6 md:mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{product.name}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Configure Your Porch</h1>
           {product.description && (
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
               {product.description}
@@ -91,7 +91,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
         <div className="text-center mb-6 md:mb-10">
           {productId === 'gazebos' && ( 
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Configure your gazebo
+              Configure Your Gazebo
             </h1>
           )}
           {/* For garages, the main title is inside ProductConfigurationForm */}
@@ -119,12 +119,7 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
               />
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <CardTitle className="text-3xl font-bold text-foreground mb-3">{product.name}</CardTitle>
-            <CardDescription className="text-md text-muted-foreground leading-relaxed">
-              {product.description}
-            </CardDescription>
-          </CardContent>
+          {/* CardContent displaying product name and description removed here */}
         </Card>
         
         <ProductConfigurationForm product={product} />

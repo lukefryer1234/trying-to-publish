@@ -32,6 +32,11 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-secondary">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
         <div className="flex items-center space-x-2">
+          <Link href="/" passHref>
+            <Button variant="ghost" size="icon" aria-label="Store Home">
+              <Home className="h-7 w-7 text-primary" />
+            </Button>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
@@ -54,12 +59,6 @@ export function Header() {
               </Link>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <Link href="/" passHref>
-            <Button variant="ghost" size="icon" aria-label="Store Home">
-              <Home className="h-7 w-7 text-primary" />
-            </Button>
-          </Link>
         </div>
         
         <nav className="flex items-center space-x-3"> {/* Added space-x-3 for spacing */}

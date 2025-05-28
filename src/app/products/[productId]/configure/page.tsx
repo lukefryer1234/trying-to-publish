@@ -94,36 +94,19 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
               Configure Your Gazebo
             </h1>
           )}
-          {/* For garages, the main title is inside ProductConfigurationForm */}
+          {/* For garages, the main title is inside ProductConfigurationForm (or was removed) */}
         </div>
         <ProductConfigurationForm product={product} />
       </div>
     );
   }
 
-  // Default layout for other products (e.g. Oak Flooring): Image on left, form on right.
-  // The form panel itself will adopt the new standardized styling.
+  // Default layout for other products (e.g. Oak Flooring): NOW CENTERED
+  // Product image previously on the left is removed.
+  // ProductConfigurationForm is a Card with max-w-2xl and mx-auto, so it centers itself.
   return (
     <div className="container mx-auto py-8">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
-        <Card className="shadow-xl rounded-lg overflow-hidden sticky top-24">
-          <CardHeader className="p-0">
-            <div className="aspect-square relative w-full">
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                layout="fill"
-                objectFit="cover"
-                priority
-                data-ai-hint={`${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} configure`}
-              />
-            </div>
-          </CardHeader>
-          {/* CardContent displaying product name and description removed here */}
-        </Card>
-        
-        <ProductConfigurationForm product={product} />
-      </div>
+      <ProductConfigurationForm product={product} />
     </div>
   );
 }

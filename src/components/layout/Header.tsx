@@ -32,7 +32,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-secondary">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
         <div className="flex items-center space-x-2">
-          <Link href="/" passHref>
+           <Link href="/" passHref>
             <Button variant="ghost" size="icon" aria-label="Store Home">
               <Home className="h-7 w-7 text-primary" />
             </Button>
@@ -52,6 +52,9 @@ export function Header() {
               ))}
               <Link href="/products/special-deals/configure" passHref>
                 <DropdownMenuItem>Special Deals</DropdownMenuItem>
+              </Link>
+              <Link href="/gallery" passHref>
+                <DropdownMenuItem>Gallery</DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />
               <Link href="/about" passHref>

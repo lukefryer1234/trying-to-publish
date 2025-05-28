@@ -17,7 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}/configure`} className="block group">
-      <Card className={`relative flex flex-col justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out rounded-lg h-72 cursor-pointer ${cardBackgroundColor}`}>
+      <Card className={`relative flex flex-col justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out rounded-lg h-96 cursor-pointer ${cardBackgroundColor}`}>
         {isSpecialDeals ? (
           <div className="flex-grow flex items-center justify-center p-4">
             <span className="text-2xl md:text-3xl font-bold text-white text-center">

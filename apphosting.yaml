@@ -7,5 +7,7 @@ runConfig:
   maxInstances: 1
 
 hosting:
-  app: nextjs
-  source: .next
+  # Use Next.js framework
+  framework: nextjs
+  # Directory containing your Next.js app
+  source: .

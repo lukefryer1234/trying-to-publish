@@ -1,5 +1,5 @@
 
-import { getProductById, mockFeaturedDeals } from '@/lib/products';
+import { getProductById, mockFeaturedDeals, mockProducts } from '@/lib/products';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductConfigurationForm } from '@/components/ProductConfigurationForm';
@@ -11,6 +11,14 @@ import type { Product } from '@/types';
 
 interface ProductConfigurePageProps {
   params: { productId: string };
+}
+
+export function generateStaticParams() {
+  // Generate paths for all product IDs
+  const allProducts = [...mockProducts, ...mockFeaturedDeals];
+  return allProducts.map(product => ({
+    productId: product.id,
+  }));
 }
 
 export default function ProductConfigurePage({ params }: ProductConfigurePageProps) {

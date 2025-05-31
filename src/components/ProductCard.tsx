@@ -28,10 +28,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <Image
             src={product.imageUrl}
             alt={product.name}
-            layout="fill"
-            objectFit="cover"
-            className="opacity-60 group-hover:opacity-80 transition-opacity duration-300 ease-in-out group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300 ease-in-out group-hover:scale-105"
             data-ai-hint={dataAiHint}
+            priority={product.name === "Garages"} /* Add priority for the LCP image */
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />

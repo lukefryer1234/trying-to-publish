@@ -102,8 +102,9 @@ const renderOption = (
                   <Image
                     src={val.imageUrl}
                     alt={val.label}
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 20vw"
+                    className="object-cover"
                   />
                 </div>
               )}
@@ -645,4 +646,3 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
     </Card>
   );
 }
-

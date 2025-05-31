@@ -144,8 +144,9 @@ export default function ProductPreviewPage() {
             <Image
               src={product.imageUrl}
               alt={product.name}
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 60vw"
+              className="object-cover"
               data-ai-hint="product custom preview"
             />
           </div>
@@ -181,4 +182,3 @@ export default function ProductPreviewPage() {
     </div>
   );
 }
-

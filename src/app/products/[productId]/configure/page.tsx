@@ -20,7 +20,8 @@ export function generateStaticParams() {
   }));
 }
 
-export default function ProductConfigurePage({ params }: ProductConfigurePageProps) {
+export default async function ProductConfigurePage(props: ProductConfigurePageProps) {
+  const params = await props.params; // Ensure params is resolved
   const { productId } = params;
   const product = getProductById(productId);
 
@@ -77,32 +78,17 @@ export default function ProductConfigurePage({ params }: ProductConfigurePagePro
   if (productId === 'porches') {
     return (
       <div className="container mx-auto py-8">
-        <div className="text-center mb-6 md:mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Configure Your Porch</h1>
-          {product.description && (
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-              {product.description}
-            </p>
-          )}
-        </div>
         <ProductConfigurationForm product={product} />
       </div>
     );
   }
 
   // Centered page title, then centered form for garages & gazebos
-  // Garage form handles its own internal title. Gazebo uses this page title.
+  // Titles are now handled by ProductConfigurationForm
   if (productId === 'garages' || productId === 'gazebos') {
     return (
       <div className="container mx-auto py-8">
-        <div className="text-center mb-6 md:mb-10">
-          {productId === 'gazebos' && ( 
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Configure Your Gazebo
-            </h1>
-          )}
-          {/* For garages, the main title is inside ProductConfigurationForm (or was removed) */}
-        </div>
+        {/* Removed outer title container for garages & gazebos */}
         <ProductConfigurationForm product={product} />
       </div>
     );

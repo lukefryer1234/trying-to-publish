@@ -84,8 +84,18 @@ export const mockProducts: Product[] = [
     name: 'Gazebos',
     description: 'Elegant oak gazebos to enhance your garden space. Perfect for outdoor relaxation.',
     imageUrl: 'https://firebasestorage.googleapis.com/v0/b/swiftcart-bsbrc.firebasestorage.app/o/gallerry%2FGazebo\'s%2FWhatsApp%20Image%202025-04-15%20at%209.57.50%20PM%20(5).jpeg?alt=media&token=ea0de540-3066-4629-98b8-a0184e992c8d',
-    basePrice: 3000,
+    basePrice: 7000, // Updated base price for 1-bay gazebo
     options: [
+      {
+        id: 'numBays',
+        name: 'Number of Bays',
+        type: 'slider',
+        min: 1,
+        max: 4, // Updated to 4 bays
+        step: 1,
+        defaultValue: 1,
+        unit: 'Bays',
+      },
       {
         id: 'legType',
         name: 'Leg Type',
@@ -330,4 +340,3 @@ export const getProductById = (id: string): Product | undefined => {
   const allProducts = [...mockProducts, ...mockFeaturedDeals];
   return allProducts.find(p => p.id === id);
 };
-

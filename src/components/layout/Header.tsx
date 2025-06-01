@@ -30,11 +30,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-secondary">
-      <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
+      <div className="container mx-auto w-full flex h-14 items-center justify-between px-4">
         <div className="flex items-center space-x-2">
            <Link href="/" passHref>
             <Button variant="ghost" size="icon" aria-label="Store Home">
-              <Home className="h-7 w-7 text-primary" />
+              <Home className="h-7 w-7 text-foreground" /> {/* Changed text-primary to text-foreground */}
             </Button>
           </Link>
           <DropdownMenu>
@@ -53,26 +53,45 @@ export function Header() {
               <Link href="/products/special-deals/configure" passHref>
                 <DropdownMenuItem>Special Deals</DropdownMenuItem>
               </Link>
+              <DropdownMenuSeparator />
               <Link href="/gallery" passHref>
                 <DropdownMenuItem>Gallery</DropdownMenuItem>
               </Link>
-              <DropdownMenuSeparator />
               <Link href="/about" passHref>
                 <DropdownMenuItem>About Us</DropdownMenuItem>
+              </Link>
+              <Link href="/custom-order" passHref>
+                <DropdownMenuItem>Custom Order</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        {/* Product links in the header (main products only) */}
+        <nav className="hidden md:flex flex-grow items-center justify-evenly space-x-2">
+          {productsForMenu.map(product => (
+            <Link key={product.id} href={`/products/${product.id}/configure`} passHref>
+              <Button variant="link" className="text-base font-semibold text-foreground hover:text-primary px-2"> {/* Changed text-muted-foreground to text-foreground */}
+                {product.name}
+              </Button>
+            </Link>
+          ))}
+          <Link href="/products/special-deals/configure" passHref>
+            <Button variant="link" className="text-base font-semibold text-foreground hover:text-primary px-2"> {/* Changed text-muted-foreground to text-foreground */}
+              Special Deals
+            </Button>
+          </Link>
+        </nav>
         
-        <nav className="flex items-center space-x-3"> {/* Added space-x-3 for spacing */}
+        <nav className="flex items-center space-x-3 ml-auto"> {/* Added ml-auto back */}
           {isClient && (
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-foreground"> {/* Changed text-muted-foreground to text-foreground */}
               {formattedCartTotal}
             </span>
           )}
           <Link href="/basket" passHref>
-            <Button variant="ghost" className="relative flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2 sm:p-2" aria-label="Shopping basket">
-              <ShoppingCart className="h-6 w-6" /> {/* Changed to ShoppingCart */}
+            <Button variant="ghost" className="relative flex items-center text-sm font-medium text-foreground transition-colors hover:text-primary p-2 sm:p-2" aria-label="Shopping basket"> {/* Changed text-muted-foreground to text-foreground */}
+              <ShoppingCart className="h-6 w-6 text-foreground" /> {/* Ensured icon also uses text-foreground */}
               {isClient && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                   {itemCount}

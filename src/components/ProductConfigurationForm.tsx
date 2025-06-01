@@ -49,7 +49,7 @@ const renderOption = (
 
 
   return (
-    <div key={option.id} className={cn(isSpecialLayout ? "text-center mb-8" : "mb-6")}>
+    <div key={option.id} className={cn(isSpecialLayout ? "text-center mb-6" : "mb-4")}> {/* mb-8 to mb-6, mb-6 to mb-4 */}
       <Label htmlFor={option.id} className={cn(`font-semibold text-foreground block mb-3 ${labelSizeClass}`, isSpecialLayout ? "" : "text-left")}>
         {option.name}
       </Label>
@@ -67,7 +67,7 @@ const renderOption = (
             <SelectContent>
               {option.values.map(val => (
                 <SelectItem key={val.value} value={val.value}>
-                  {val.label} {val.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' ? `(${val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})` : ''}
+                  {val.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -109,7 +109,6 @@ const renderOption = (
                 </div>
               )}
               <span className={`text-center block ${radioLabelSizeClass}`}>{val.label}</span>
-                {val.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' ? <span className="text-xs text-muted-foreground">({val.priceModifier > 0 ? '+' : ''}£${val.priceModifier.toFixed(2)})</span> : ''}
             </Label>
           ))}
         </RadioGroup>
@@ -157,7 +156,6 @@ const renderOption = (
           />
           <Label htmlFor={option.id} className={`font-normal cursor-pointer ${checkboxLabelSizeClass}`}>
             {option.checkboxLabel || 'Yes'}
-              {option.priceModifier && productName !== 'Garages' && product.id !== 'oak-beams' && currentValue === true ? ` (+£${option.priceModifier.toFixed(2)})` : ''}
           </Label>
         </div>
       )}
@@ -371,7 +369,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   if (isOakBeamsLayout) {
     return (
-      <Card className="w-full max-w-lg mx-auto shadow-xl rounded-lg">
+      <Card className="w-full max-w-xl mx-auto shadow-lg rounded-lg bg-card border-2"> {/* Changed to shadow-lg, border-2 */}
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your Oak Beams</CardTitle>
         </CardHeader>
@@ -387,7 +385,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
               {['lengthCm', 'widthCm', 'thicknessCm'].map(dimId => {
                 const option = product.options.find(opt => opt.id === dimId) as ProductOption | undefined;
                 if (!option) return null;
-                 return renderOption(option, getOptionValue(option.id), handleOptionChange, product, false);
+                 return renderOption(option, getOptionValue(option.id), handleOptionChange, product, true);
               })}
             </div>
           </div>
@@ -443,7 +441,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
   if (isPorchesLayout) {
     return (
-      <Card className="w-full max-w-xl mx-auto shadow-xl rounded-lg">
+      <Card className="w-full max-w-xl mx-auto shadow-lg rounded-lg bg-card border-2"> {/* Changed to shadow-lg, border-2 */}
         <CardHeader className="text-center pb-4 bg-muted/30">
           <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">Configure Your {product.name}</CardTitle>
         </CardHeader>
@@ -535,7 +533,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
 
 
   return (
-    <Card className={cn("w-full shadow-xl rounded-lg border-2 bg-secondary", (isSpecialConfigLayout) ? "max-w-2xl mx-auto" : "md:max-w-md lg:max-w-lg")}>
+    <Card className={cn("w-full shadow-lg rounded-lg border-2 bg-card", (isSpecialConfigLayout) ? "max-w-xl mx-auto" : "md:max-w-md lg:max-w-lg")}> {/* Changed to shadow-lg, border-2 */}
       {(isSpecialConfigLayout && product.id !== 'garages') && (
         <CardHeader className="text-center">
           <CardTitle className={cn("text-2xl md:text-3xl font-bold text-foreground", product.id === 'gazebos' ? 'pt-0' : '')}>
@@ -543,7 +541,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className={cn("space-y-8 px-4 md:px-8", (product.id === 'garages' || (isSpecialConfigLayout && product.id !== 'garages')) ? "pt-6" : "pt-6")}>
+      <CardContent className={cn("space-y-6 px-4 md:px-8", (product.id === 'garages' || (isSpecialConfigLayout && product.id !== 'garages')) ? "pt-4" : "pt-4")}> {/* space-y-8 to space-y-6, pt-6 to pt-4 */}
         {product.id === 'garages' && (
           <>
             <h2 className="text-3xl font-bold text-foreground text-center mb-6">
@@ -595,7 +593,7 @@ export function ProductConfigurationForm({ product }: ProductConfigurationFormPr
             <p className="text-xs text-muted-foreground">(excl. VAT & Delivery)</p>
         </div>
       </CardContent>
-      <CardFooter className="pt-2 pb-8 px-4 md:px-8">
+      <CardFooter className="pt-2 pb-6 px-4 md:px-8"> {/* pb-8 to pb-6 */}
         {(product.id === 'garages' || product.id === 'gazebos') ? (
           <div className="w-full grid grid-cols-2 gap-4">
             <Button

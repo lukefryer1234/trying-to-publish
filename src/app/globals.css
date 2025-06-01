@@ -3,6 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  width: 100%;
+  /* height: 100%; Removed as min-height: 100vh on body is usually sufficient */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbars that might cause edge issues */
+}
+
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
@@ -91,5 +99,40 @@ body {
   }
   main {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
+}
+
+.config-page-background { /* This div is applied to the outermost wrapper in page.tsx */
+  position: relative; /* Needed for z-index stacking of the ::before pseudo-element */
+  z-index: 0; /* Establishes a stacking context */
+  flex-grow: 1; /* Ensures this div tries to fill <main> */
+  display: flex;
+  flex-direction: column;
+  /* Background image is now handled by the ::before pseudo-element */
+}
+
+.config-page-background::before { /* This pseudo-element handles both image and overlay */
+  content: "";
+  position: fixed; /* Covers the entire viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Background image only, no overlay/fade */
+  background-image: url('https://picsum.photos/seed/configpagebg/1920/1080?grayscale'); /* Image URL (sharper) */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Ensures the entire background effect is fixed */
+  z-index: -1; /* Sits behind the content of .config-page-background */
+}
+
+.config-page-content-wrapper { /* This div wraps the actual page content (cards, etc.) */
+  position: relative; /* Ensures content is stacked above the parent's ::before */
+  z-index: 1; /* Explicitly above the ::before pseudo-element */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Ensure it takes full width within its parent */
 }

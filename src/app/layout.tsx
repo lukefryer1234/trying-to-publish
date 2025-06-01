@@ -31,8 +31,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <CartProvider>
           <Header />
-          <main className="flex-grow container mx-auto px-4 py-8">
-            {children}
+          <main className="flex-grow"> {/* Removed container, mx-auto, px-4, py-8 */}
+            <div className="config-page-background">{/* This will apply background to all pages */}
+              {children}
+            </div>
           </main>
           <Footer />
           <Toaster />

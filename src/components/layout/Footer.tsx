@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="w-full bg-amber-900 text-amber-50 py-6">
+    <footer className="w-full bg-amber-900 text-amber-50 py-6 relative z-10"> {/* Added relative z-10 */}
       <div className="container mx-auto px-4 flex flex-col items-center justify-center text-center">
         <p className="text-sm mb-1">
           &copy; {new Date().getFullYear()} Oak Structures. All rights reserved.

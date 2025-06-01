@@ -1,4 +1,3 @@
-
 import { getProductById, mockFeaturedDeals, mockProducts } from '@/lib/products';
 import Image from 'next/image';
 import Link from 'next/link';
